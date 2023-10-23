@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RENHelpers.DataAccessHelpers", "RENHelpers.DataAccessHelpers\RENHelpers.DataAccessHelpers.csproj", "{C79648FD-CEB6-428A-8B82-A120012710D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RENHelpers.DataAccessHelpers", "src\RENHelpers.DataAccessHelpers\RENHelpers.DataAccessHelpers.csproj", "{C79648FD-CEB6-428A-8B82-A120012710D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RENHelpers.StringHelpers", "src\RENHelpers.StringHelpers\RENHelpers.StringHelpers.csproj", "{884214E7-E770-49D7-952E-9EF2A5D6A2F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +14,9 @@ Global
 		{C79648FD-CEB6-428A-8B82-A120012710D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C79648FD-CEB6-428A-8B82-A120012710D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C79648FD-CEB6-428A-8B82-A120012710D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{884214E7-E770-49D7-952E-9EF2A5D6A2F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{884214E7-E770-49D7-952E-9EF2A5D6A2F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{884214E7-E770-49D7-952E-9EF2A5D6A2F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{884214E7-E770-49D7-952E-9EF2A5D6A2F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

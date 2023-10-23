@@ -1,3 +1,18 @@
+# RENHelper - Database Access
+
+Welcome! This is the documentation of RENHelper Database Access. RENHelper Database Access is a library that streamlines and standardizes common development tasks, such as creating a Cache layer and implementing essential utility functions. It enables developers to adhere to best practices, save time, and focus on solving problems efficiently. For now, it only works with Entity Framework!
+
+# Table of Contents
+- [Database Setup for .NET Projects](#database-setup-for-net-projects)
+- [REN Unit Of Work Helper](#ren-unit-of-work-helper)
+  * [Standard Implementation of RENUnitOfWork](#standard-implementation-of-renunitofwork)
+  * [Custom Implementation of RENUnitOfWork](#custom-usage-of-renunitofwork)
+  * [Using Both Overriding and Implementing Additional Unit Of Work Methods](#using-both-overriding-and-implementing-additional-unit-of-work-methods)
+- [REN Repository Helper](#ren-repository-helper)
+  * [Standard Implementation of RENRepository](#standard-implementation-of-renrepository)
+  * [Custom Implementation of RENRepository](#custom-implementation-of-renrepository)
+  * [Using Both Overriding and Implementing Additional Repository Methods](#using-both-overriding-and-implementing-additional-repository-methods)
+
 # Database Setup for .NET Projects
 
 ```csharp
@@ -23,7 +38,9 @@ public class RENDbContext: DbContext
     }
 }
 ```
+
 In this example I used Entity Framework Code First approach which means User and Side classes are POCO Class:
+
 ```csharp
 public class User
 {
@@ -44,7 +61,9 @@ public class Side
     public List<User> Users { get; set; }
 }
 ```
+
 In your appsettings.json file you need to set proper Connection Strings:
+
 ```json
 {
   "Logging": {
@@ -59,32 +78,44 @@ In your appsettings.json file you need to set proper Connection Strings:
   }
 }
 ```
-Then in your ```Program.cs```, you have the register your DbContext. 
-Please note that if your json level of connectionstrings are different, you need to change the GetSection("differedpath") parameter accordingly:
+
+Then in your ```Program.cs```, you have the register your DbContext.
+Please note that if your json level of connectionstrings are different, you need to change the GetSection("
+differedpath") parameter accordingly:
+
 ```csharp
 builder.Services.AddDbContext<RENDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetSection("ConnectionStrings:Dev").Value);
 });
 ```
+
 Please note that in this example we used Sql Server but you can change the database according to your needs!
 Then in Package Manager Console execute these commands to create your migration and apply it to database:
+
 ```bash
 >> Add-Migration Migration_1
 >> Update-Databse -Verbose
 ```
+
 or alternatively, you can execute following commands in terminal:
+
 ```bash
 >> dotnet ef migrations add Migration_1
 >> dotnet ef database update
 ```
+
 When creating the database is done you are good to go to use REN Database Access Helpers!
 
-
 # REN Unit Of Work Helper
-A Unit of Work is a design pattern used in software development, primarily in the context of working with databases and managing transactions. It is often used in conjunction with the Repository pattern to help manage data access and transactions in a consistent and efficient way. The main goal of the Unit of Work pattern is to ensure that all database operations within a given unit of work are performed atomically, either all succeeding or all failing.
 
-You can have get information through here: ​https://learn.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application
+A Unit of Work is a design pattern used in software development, primarily in the context of working with databases and
+managing transactions. It is often used in conjunction with the Repository pattern to help manage data access and
+transactions in a consistent and efficient way. The main goal of the Unit of Work pattern is to ensure that all database
+operations within a given unit of work are performed atomically, either all succeeding or all failing.
+
+You can have get information through here:
+​https://learn.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application
 
 ```RENUnitOfWork``` section has the standard implementations of UnitOfWork pattern which can be expandable or overriden.
 
@@ -159,13 +190,15 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
 }
 ```
 
-Here, you can see all methods are defined as virtual which allows you to override them if necessary according to your needs. To use this pre-defined methods, you need register them in ``` file:
+Here, you can see all methods are defined as virtual which allows you to override them if necessary according to your
+needs. To use this pre-defined methods, you need register them in ``` file:
 
 ```csharp
 builder.Services.RegisterRENDatabaseAccessHelpers()
 ```
 
 Here, the content of the RegisterRENDatabaseAccessHelpers is:
+
 ```csharp
 public static IServiceCollection RegisterRENDatabaseAccessHelpers(this IServiceCollection services)
 {
@@ -175,8 +208,10 @@ public static IServiceCollection RegisterRENDatabaseAccessHelpers(this IServiceC
 }
 ```
 
-As you can see, only the ```RENUnitOfWork``` is registered. Since we will instantiate all repositories from ```RENUnitOfWork```, we are not registering them through here.
+As you can see, only the ```RENUnitOfWork``` is registered. Since we will instantiate all repositories
+from ```RENUnitOfWork```, we are not registering them through here.
 Then you are good to go! You can use standard ```RENUnitOfWork``` like this:
+
 ```csharp
 public class UserService
 {
@@ -191,15 +226,19 @@ public class UserService
 
 You are good to go! Let's examine the Repository part and expand the usage of UnitFoWork with its full potential!
 
-## Custom Usage of RENUnitOfWork
+## Custom Implementation of RENUnitOfWork
 
-REN library does not like forcing you to do something with its own rules. That's why it allows you to customize it and make it fit to your own rules!
+REN library does not like forcing you to do something with its own rules. That's why it allows you to customize it and
+make it fit to your own rules!
 You can customize implementation of ```RENUnitOfWork``` via overriding its methods or implementing new ones to expand.
 
 ### Overriding Existing Methods
 
-As you can see in standard implementation, all methods are marked as virtual which means you can customize their content via overriding them.
-You can override the existing methods to create a new class. To do that, newly created classes should inherit from ```RENUnitOfWork``` class:
+As you can see in standard implementation, all methods are marked as virtual which means you can customize their content
+via overriding them.
+You can override the existing methods to create a new class. To do that, newly created classes should inherit
+from ```RENUnitOfWork``` class:
+
 ```csharp
 public class MyUnitOfWork<TDbContext> : RENUnitOfWork<TDbContext> where TDbContext : RENDbContext
 {
@@ -219,13 +258,16 @@ public class MyUnitOfWork<TDbContext> : RENUnitOfWork<TDbContext> where TDbConte
 Here, we use T is RENDbContext because RENDbContext is already DbContext!
 ```
 
-Here, we overrided the existing method to expand it's functionality. From now on, we have register MyUnitOfWork in Program.cs instead of standard registeration:
+Here, we overrided the existing method to expand it's functionality. From now on, we have register MyUnitOfWork in
+Program.cs instead of standard registeration:
+
 ```csharp
 // builder.Services.RegisterRENDatabaseAccessHelpers(); // SINCE WE ARE NOT USING STANDARD APPROACH ANYMORE
 builder.Services.AddScoped(typeof(IRENUnitOfWork<>), typeof(MyUnitOfWork<>));
 ```
 
 And we may inject it to our classes:
+
 ```csharp
 public class HomeController : ControllerBase
 {
@@ -239,10 +281,15 @@ public class HomeController : ControllerBase
     }
 }
 ```
+
 Here, you will use your MyUnitOfWork class thanks to registeration.
 
 ### Implementing Additional Methods
-Surely you should be able to implement new functions addition to existing one if you need it. This is SOLID after all! Let's see how we can do this. First you need to create the interface that inherits from ```IRENUnitOfWork``` interface. Your new interface should contain additional methods and must be inherited from ```IRENUnitOfWork``` interface to get all function signatures:
+
+Surely you should be able to implement new functions addition to existing one if you need it. This is SOLID after all!
+Let's see how we can do this. First you need to create the interface that inherits from ```IRENUnitOfWork``` interface.
+Your new interface should contain additional methods and must be inherited from ```IRENUnitOfWork``` interface to get
+all function signatures:
 
 ```csharp
 public interface IMyUnitOfWork<TDbContext>: IRENUnitOfWork<TDbContext> where TDbContext : RENDbContext
@@ -251,7 +298,9 @@ public interface IMyUnitOfWork<TDbContext>: IRENUnitOfWork<TDbContext> where TDb
 }
 ```
 
-Then create your custom UnitOfWork class and make it inherit from ```RENUnitOfWork``` class and your new interface (in this case it is IMyUnitOfWork) that contains your custom function signature.
+Then create your custom UnitOfWork class and make it inherit from ```RENUnitOfWork``` class and your new interface (in
+this case it is IMyUnitOfWork) that contains your custom function signature.
+
 ```csharp
 public class MyUnitOfWork<TDbContext> : RENUnitOfWork<TDbContext>, IMyUnitOfWork<TDbContext> where TDbContext : RENDbContext
 {
@@ -265,12 +314,15 @@ public class MyUnitOfWork<TDbContext> : RENUnitOfWork<TDbContext>, IMyUnitOfWork
 }
 ```
 
-Then you have to change your register type in Program.cs to this since you will want to use ```IMyUnitOfWork``` from now on:
+Then you have to change your register type in Program.cs to this since you will want to use ```IMyUnitOfWork``` from now
+on:
+
 ```csharp
 builder.Services.AddScoped(typeof(IMyUnitOfWork<>), typeof(MyUnitOfWork<>));
 ```
 
 Then you can use this custom function as follows:
+
 ```csharp
 public class HomeController : ControllerBase
 {
@@ -290,8 +342,11 @@ public class HomeController : ControllerBase
 }
 ```
 
-### Using Both
-To use both you have to combine two methods. First create your interface as shown in ```Implementing Additional Methods``` section.
+### Using Both Overriding and Implementing Additional Unit Of Work Methods
+
+To use both you have to combine two methods. First create your interface as shown
+in ```Implementing Additional Methods``` section.
+
 ```csharp
 public interface IMyUnitOfWork<TDbContext>: IRENUnitOfWork<TDbContext> where TDbContext : RENDbContext
 {
@@ -299,7 +354,10 @@ public interface IMyUnitOfWork<TDbContext>: IRENUnitOfWork<TDbContext> where TDb
 }
 ```
 
-Then, create your custom UnitOfWork class that inherits from RENUnitOfWork (since we want to overrride the desired methods and don't want to implement other methods again that IRENUnitOfWork contains) and IMyUnitOfWork (since we want to get newly created custom function signature).
+Then, create your custom UnitOfWork class that inherits from RENUnitOfWork (since we want to overrride the desired
+methods and don't want to implement other methods again that IRENUnitOfWork contains) and IMyUnitOfWork (since we want
+to get newly created custom function signature).
+
 ```csharp
 public class MyUnitOfWork<TDbContext> : RENUnitOfWork<TDbContext>, IMyUnitOfWork<TDbContext> where TDbContext : RENDbContext
 {
@@ -326,6 +384,7 @@ builder.Services.AddScoped(typeof(IMyUnitOfWork<>), typeof(MyUnitOfWork<>));
 ```
 
 And you can use it like this:
+
 ```csharp
 public class HomeController : ControllerBase
 {
@@ -375,8 +434,11 @@ Here, we used both overriden (SaveChangesAsync()) and extra implemented(MyCustom
 
 # REN Repository Helper
 
-The Repository Pattern is a design pattern commonly used in software development to separate the logic that retrieves data from a data source (such as a database) from the rest of the application. It provides an abstraction layer between the application code and the data source, promoting a more modular and maintainable design.
-You can have get information through here: https://learn.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application
+The Repository Pattern is a design pattern commonly used in software development to separate the logic that retrieves
+data from a data source (such as a database) from the rest of the application. It provides an abstraction layer between
+the application code and the data source, promoting a more modular and maintainable design.
+You can have get information through
+here: https://learn.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application
 RENRepository section has the standart implementations of Repository pattern which can be expandable or overriden.
 
 ## Standard Implementation of RENRepository
@@ -563,8 +625,11 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
 }
 ```
 
-Here, you can see all methods are defined as virtual which allows you to override them if necessary according to your needs. To use this pre-defined methods, you don't need to register them in Program.cs file since they can be produced within the ```GetRENRepository``` function in ```RENUnitOfWork```
+Here, you can see all methods are defined as virtual which allows you to override them if necessary according to your
+needs. To use this pre-defined methods, you don't need to register them in Program.cs file since they can be produced
+within the ```GetRENRepository``` function in ```RENUnitOfWork```
 You can use ```RENRepositories``` like this:
+
 ```csharp
 public class HomeController : ControllerBase
 {
@@ -585,14 +650,16 @@ public class HomeController : ControllerBase
 }
 ```
 
-## Custom Usage of RENRepository
+## Custom Implementation of RENRepository
 
 You can customize implementation of RENRepository via overriding its methods or implementing new ones to expand.
 
 ### Overriding Existing Methods
 
-As you can see in standard implementation, all methods are marked as virtual which means you can customize their content via overriding them.
-You can override the existing methods to create a new class. To do that, newly created classes should inherit from ```RENRepository``` class:
+As you can see in standard implementation, all methods are marked as virtual which means you can customize their content
+via overriding them.
+You can override the existing methods to create a new class. To do that, newly created classes should inherit
+from ```RENRepository``` class:
 
 ```csharp
 public class MyRepository<TEntity> : RENRepository<TEntity> where TEntity : class
@@ -609,7 +676,8 @@ public class MyRepository<TEntity> : RENRepository<TEntity> where TEntity : clas
 }
 ```
 
-Here, we overrided the existing method to expand it's functionality. From now on, we don't have register MyRepository in Program.cs since we will use it in our UnitOfWork class. 
+Here, we overrided the existing method to expand it's functionality. From now on, we don't have register MyRepository in
+Program.cs since we will use it in our UnitOfWork class.
 In Program.cs you must register it with IRENUnitOfWork since we are not using custom Interface here:
 
 ```csharp
@@ -617,6 +685,7 @@ builder.Services.AddScoped(typeof(IRENUnitOfWork<>), typeof(MyUnitOfWork<>));
 ```
 
 To achieve this we can create new function named GetMyRepository in our UnitOfWork:
+
 ```csharp
 public class MyUnitOfWork<TDbContext> : RENUnitOfWork<TDbContext> where TDbContext : RENDbContext
 {
@@ -628,11 +697,13 @@ public class MyUnitOfWork<TDbContext> : RENUnitOfWork<TDbContext> where TDbConte
     }
 }
 ```
+
 From now on GetMyRepository function returns IMyRepository object which contains our custom implementation.
 
 ```
 You can implement custom function instead of overriding existing one to get repository and use it. It is all up to you!
 ```
+
 And you can get and use your custom repository like this:
 
 ```csharp
@@ -658,7 +729,10 @@ public class HomeController : ControllerBase
 
 ### Implementing Additional Methods
 
-Surely you should be able to implement new functions addition to existing one if you need it. This is SOLID after all! Let's see how we can do this. First you need to create the interface that inherits from IRENRepository interface. Your new interface should contain additional methods:
+Surely you should be able to implement new functions addition to existing one if you need it. This is SOLID after all!
+Let's see how we can do this. First you need to create the interface that inherits from IRENRepository interface. Your
+new interface should contain additional methods:
+
 ```csharp
 public interface IMyRepository<TEntity> : IRENRepository<TEntity> where TEntity : class
 {
@@ -698,19 +772,24 @@ public class MyUnitOfWork<TDbContext> : RENUnitOfWork<TDbContext>, IMyUnitOfWork
     }
 }
 ```
+
 Also update the interface:
+
 ```csharp
 public interface IMyUnitOfWork<TDbContext>: IRENUnitOfWork<TDbContext> where TDbContext : RENDbContext
 {
     IMyRepository<TEntity>? GetMyRepository<TEntity>() where TEntity : class;
 }
 ```
+
 Register your custom ```UnitOfWork``` class in your Program.cs:
+
 ```csharp
 builder.Services.AddScoped(typeof(IMyUnitOfWork<>), typeof(MyUnitOfWork<>));
 ```
 
 And you can get and use your custom repository like this:
+
 ```csharp
 public class HomeController : ControllerBase
 {
@@ -730,7 +809,8 @@ public class HomeController : ControllerBase
 }
 ```
 
-### Using Both
+### Using Both Overriding and Implementing Additional Repository Methods
+
 To use both you have to combine two methods. First create the IMyRepository Interface to implement additional methods:
 
 ```csharp
@@ -740,7 +820,8 @@ public interface IMyRepository<TEntity> : IRENRepository<TEntity> where TEntity 
 }
 ```
 
-Then create ```MyRepository``` class that inherits from ```RENRepository``` and  ```IMyRepository``` and contains overriden method(s):
+Then create ```MyRepository``` class that inherits from ```RENRepository``` and  ```IMyRepository``` and contains
+overriden method(s):
 
 ```csharp
 public class MyRepository<TEntity> : RENRepository<TEntity>, IMyRepository<TEntity> where TEntity : class
@@ -763,7 +844,9 @@ public class MyRepository<TEntity> : RENRepository<TEntity>, IMyRepository<TEnti
 }
 ```
 
-To use ```MyRepository``` class with the interface, we created ```IMyRepository``` interface. We need to add a repository getter function to get repositories in ```IMyRepository``` type instead of ```IRENRepository```. We need that because ```IRENRepository``` does not contain our custom function!
+To use ```MyRepository``` class with the interface, we created ```IMyRepository``` interface. We need to add a
+repository getter function to get repositories in ```IMyRepository``` type instead of ```IRENRepository```. We need that
+because ```IRENRepository``` does not contain our custom function!
 
 ```csharp
 public interface IMyUnitOfWork<TDbContext>: IRENUnitOfWork<TDbContext> where TDbContext : RENDbContext
@@ -782,11 +865,13 @@ public class MyUnitOfWork<TDbContext> : RENUnitOfWork<TDbContext>, IMyUnitOfWork
 }
 ```
 
-In ```Program.cs``` we need to register ```MyUnitOfWork``` class from interface ```IMyUnitOfWork``` since it contains the repository getter method.
+In ```Program.cs``` we need to register ```MyUnitOfWork``` class from interface ```IMyUnitOfWork``` since it contains
+the repository getter method.
 
 ```csharp
 builder.Services.AddScoped(typeof(IMyUnitOfWork<>), typeof(MyUnitOfWork<>));
 ```
+
 Then you can use your final Repository and Unit Of Work classes like this:
 
 ```csharp
@@ -809,6 +894,7 @@ public class HomeController : ControllerBase
     }
 }
 ```
+
 ## Documentation
 
 [Documentation](https://fethis-organization.gitbook.io/ren-regular-everyday-normal-helper/)

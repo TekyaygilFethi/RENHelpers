@@ -24,15 +24,22 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.12" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+        <PackageReference Include="StackExchange.Redis" Version="2.6.122" />
+        <PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
         <None Include="NUGETREADME.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 
     <ItemGroup>
-      <None Update="reindeer.png">
-        <Pack>True</Pack>
-        <PackagePath></PackagePath>
-      </None>
+        <None Update="reindeer.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\RENHelpers.StringHelpers\RENHelpers.StringHelpers.csproj" />
     </ItemGroup>
 
 
