@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RENHelpers.DataAccessHelpers.CacheAccess.Base;
-using RENHelpers.DataAccessHelpers.EntityFrameworkAccess;
+using RENHelpers.DataAccessHelpers.CacheHelpers;
+using RENHelpers.DataAccessHelpers.DatabaseHelpers;
 
 namespace RENHelpers.DataAccessHelpers.Extensions;
 
