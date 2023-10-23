@@ -4,13 +4,35 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Title>REN Data Access Helpers</Title>
+        <Authors>Fethi Tekyaygil</Authors>
+        <Description>REN Data Access Helper allows developers to use customizable and expandable pre-defined data access classes to improve their agility of software development</Description>
+        <PackageProjectUrl>https://github.com/TekyaygilFethi/RENHelpers</PackageProjectUrl>
+        <PackageIcon>reindeer.png</PackageIcon>
+        <RepositoryUrl>https://github.com/TekyaygilFethi/RENHelpers</RepositoryUrl>
+        <PackageReleaseNotes>- added database accessors: RENUnitOfWork and RENRepository</PackageReleaseNotes>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageTags>DataAccess,UnitOfWork,EntityFrameworkCode,Repository</PackageTags>
+        <PackageReadmeFile>NUGETREADME.md</PackageReadmeFile>
+        <Copyright>Copyright (c) 2023 Fethi Tekyaygil</Copyright>
+        <Version>1.0.1</Version>
     </PropertyGroup>
 
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.12"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0"/>
-        <PackageReference Include="Newtonsoft.Json" Version="9.0.1"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.12" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+        <None Include="NUGETREADME.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <None Update="reindeer.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 
 
