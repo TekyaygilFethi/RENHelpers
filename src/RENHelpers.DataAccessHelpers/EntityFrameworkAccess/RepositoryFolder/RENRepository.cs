@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
-namespace RENHelpers.DataAccessHelpers;
+namespace RENHelpers.DataAccessHelpers.DatabaseHelpers;
 
 /// <summary>
 ///     Represents a generic repository for database operations on a specific entity type.

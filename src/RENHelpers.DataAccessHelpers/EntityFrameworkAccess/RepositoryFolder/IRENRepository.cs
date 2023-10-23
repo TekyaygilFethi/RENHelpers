@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace RENHelpers.DataAccessHelpers;
+namespace RENHelpers.DataAccessHelpers.DatabaseHelpers;
 
 /// <summary>
 ///     Represents a generic repository interface for performing CRUD operations on a specific entity type.

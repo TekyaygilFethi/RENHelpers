@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace RENHelpers.DataAccessHelpers.EntityFrameworkAccess;
+namespace RENHelpers.DataAccessHelpers.DatabaseHelpers;
 
 public interface IRENUnitOfWork<TDbContext> where TDbContext : DbContext
 {

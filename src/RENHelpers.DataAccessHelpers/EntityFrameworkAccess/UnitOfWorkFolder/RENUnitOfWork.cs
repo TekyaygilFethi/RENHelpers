@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace RENHelpers.DataAccessHelpers.EntityFrameworkAccess;
+namespace RENHelpers.DataAccessHelpers.DatabaseHelpers;
 
 /// <summary>
 ///     Represents a unit of work for managing database transactions and repositories in a generic context.

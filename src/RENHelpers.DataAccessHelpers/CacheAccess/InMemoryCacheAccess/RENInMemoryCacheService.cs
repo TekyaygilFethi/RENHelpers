@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using RENHelpers.DataAccessHelpers.CacheAccess.Base;
 
-namespace RENHelpers.DataAccessHelpers.CacheAccess.InMemoryCacheAccess;
+namespace RENHelpers.DataAccessHelpers.CacheHelpers;
 
 public class RENInMemoryCacheService : IRENCacheService
 {

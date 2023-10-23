@@ -1,4 +1,4 @@
-﻿namespace RENHelpers.DataAccessHelpers.CacheAccess.Base;
+﻿namespace RENHelpers.DataAccessHelpers.CacheHelpers;
 
 public interface IRENCacheService
 {

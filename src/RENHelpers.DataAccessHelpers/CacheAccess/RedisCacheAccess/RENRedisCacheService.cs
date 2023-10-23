@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using RENHelpers.DataAccessHelpers.CacheAccess.Base;
 using RENHelpers.StringHelper.ExtensionsFolder;
 using StackExchange.Redis;
+
+namespace RENHelpers.DataAccessHelpers.CacheHelpers;
 
 public class RENRedisCacheService : IRENCacheService
 {
