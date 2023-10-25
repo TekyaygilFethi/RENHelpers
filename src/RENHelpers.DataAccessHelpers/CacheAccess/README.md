@@ -48,7 +48,8 @@ First, you need to add some configuration to the appsetttings.json file:
 
 Let us set up the both of them in order:
 
-Setting up the In Memory Cache
+## Setting up the In Memory Cache
+
 To set up In Memory cache you need to register required services into your
 ```Program.cs```
 
@@ -56,7 +57,7 @@ To set up In Memory cache you need to register required services into your
 builder.Services.AddMemoryCache();
 ```
 
-Setting up the Redis
+## Setting up the Redis
 To set up Redis cache you need to register required services into your Program.cs:
 
 ```csharp
