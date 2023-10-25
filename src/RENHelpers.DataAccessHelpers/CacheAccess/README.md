@@ -20,8 +20,8 @@ Before we dive into fabulous pre-defined Cache Service implementations, we need 
 
 - In Memory
 - Redis
-  
-  First, you need to add some configuration to the appsetttings.json file:
+
+First, you need to add some configuration to the appsetttings.json file:
 
 ```json
 {
