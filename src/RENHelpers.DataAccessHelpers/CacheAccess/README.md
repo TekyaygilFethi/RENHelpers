@@ -526,13 +526,13 @@ To use Redis Cache, please make sure your appsettings.json content be as follows
 {
   "CacheConfiguration": {
     "RedisConfiguration": {
-      "Url": "redis-18003.c263.us-east-1-2.ec2.cloud.redislabs.com:18003",
+      "Url": "localhost:6379",
       "TimeConfiguration": {
         "AbsoluteExpirationInHours": 12
       },
       "DatabaseId": 0,
       "Username": "default",
-      "Password": "ofqa9YpQ6iw5tmDsoH5EW1OTMJtKs2Gs",
+      "Password": "my_pwd",
       "AbortOnConnectFail": false
     }
   }
