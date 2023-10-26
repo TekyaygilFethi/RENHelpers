@@ -6,4 +6,35 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Title>REN String Helpers</Title>
+        <Authors>Fethi Tekyaygil</Authors>
+        <Description>REN String Helper allows developers to use customizable and expandable pre-defined string operations to improve their agility of software development</Description>
+        <PackageProjectUrl>https://github.com/TekyaygilFethi/RENHelpers</PackageProjectUrl>
+        <PackageIcon>reindeer.png</PackageIcon>
+        <RepositoryUrl>https://github.com/TekyaygilFethi/RENHelpers</RepositoryUrl>
+        <PackageReleaseNotes>- readme updated</PackageReleaseNotes>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageTags>String</PackageTags>
+        <PackageReadmeFile>NUGETREADME.md</PackageReadmeFile>
+        <Copyright>Copyright (c) 2023 Fethi Tekyaygil</Copyright>
+        <Version>1.0.2</Version>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <None Update="NUGETREADME.md">
+        <Pack>true</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
+      <None Update="reindeer.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
+    </ItemGroup>
+
 </Project>

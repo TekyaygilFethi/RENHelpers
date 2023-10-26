@@ -13,7 +13,7 @@ public class RENRedisCacheService : IRENCacheService
     private ConnectionMultiplexer _connection;
     private int _defaultAbsoluteExpirationHours;
 
-    protected RENRedisCacheService(IConfiguration configuration)
+    public RENRedisCacheService(IConfiguration configuration)
     {
         SetDefaults(configuration);
         Connect(configuration);
