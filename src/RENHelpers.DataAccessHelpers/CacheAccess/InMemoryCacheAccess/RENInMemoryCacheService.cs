@@ -11,7 +11,7 @@ public class RENInMemoryCacheService : IRENCacheService
     private int _defaultAbsoluteExpirationHours;
     private int _defaultSlidingExpirationMinutes;
 
-    protected RENInMemoryCacheService(IMemoryCache cache)
+    public RENInMemoryCacheService(IMemoryCache cache)
     {
         _cache = cache;
         CacheKeys = new HashSet<string>();
