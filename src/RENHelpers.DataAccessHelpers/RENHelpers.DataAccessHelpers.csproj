@@ -16,7 +16,7 @@
         <PackageTags>DataAccess,UnitOfWork,EntityFrameworkCode,Repository</PackageTags>
         <PackageReadmeFile>NUGETREADME.md</PackageReadmeFile>
         <Copyright>Copyright (c) 2023 Fethi Tekyaygil</Copyright>
-        <Version>1.0.5</Version>
+        <Version>1.0.51</Version>
     </PropertyGroup>
 
 
