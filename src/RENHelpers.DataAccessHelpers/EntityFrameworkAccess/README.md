@@ -126,66 +126,109 @@ Here is the standard implementation of ```RENUnitOfWork``` which allows you to u
 ```csharp
 public interface IRENUnitOfWork<TDbContext> where TDbContext : DbContext
 {
-    bool SaveChanges();
+    /// <summary>
+    ///     Commits the changes made in the unit of work to the database.
+    /// </summary>
+    void SaveChanges();
 
-    Task<bool> SaveChangesAsync();
-    
+    /// <summary>
+    ///     Commits the changes made in the unit of work to the database asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Gets a repository for a specific entity type.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type for the repository.</typeparam>
+    /// <returns>An instance of the repository for the specified entity type.</returns>
     IRENRepository<TEntity>? GetRENRepository<TEntity>() where TEntity : class;
-    
-    Task<IRENRepository<TEntity>?> GetRENRepositoryAsync<TEntity>() where TEntity : class;
+
+    /// <summary>
+    ///     Gets a repository for a specific entity type asynchronously.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type for the repository.</typeparam>
+    /// <returns>A task representing an instance of the repository for the specified entity type.</returns>
+    Task<IRENRepository<TEntity>?> GetRENRepositoryAsync<TEntity>(CancellationToken cancellationToken = default) where TEntity : class;
 }
 
+/// <summary>
+///     Represents a unit of work for managing database transactions and repositories in a generic context.
+/// </summary>
+/// <typeparam name="TDbContext">The type of the database context.</typeparam>
 public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbContext : DbContext
 {
     protected readonly TDbContext _context;
 
-    private bool disposed;
-
-    protected RENUnitOfWork(TDbContext context)
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="RENUnitOfWork{TDbContext}" /> class.
+    /// </summary>
+    /// <param name="context">The database context to be used within the unit of work.</param>
+    public RENUnitOfWork(TDbContext context)
     {
-        _context = context ?? throw new ArgumentNullException("context");
+        _context = context ?? throw new ArgumentNullException(nameof(TDbContext));
     }
 
-    public virtual bool SaveChanges()
+    /// <summary>
+    ///     Commits the changes made in the unit of work to the database.
+    /// </summary>
+    public virtual void SaveChanges()
     {
         using var ctxTransaction = _context.Database.BeginTransaction();
         try
         {
             _context.SaveChanges();
             ctxTransaction.Commit();
-            return true;
         }
         catch (Exception)
         {
             ctxTransaction.Rollback();
-            return false;
+            throw;
         }
     }
 
-    public virtual async Task<bool> SaveChangesAsync()
+    /// <summary>
+    ///     Commits the changes made in the unit of work to the database asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        await using var ctxTransaction = await _context.Database.BeginTransactionAsync();
+        cancellationToken.ThrowIfCancellationRequested();
+        await using var ctxTransaction = await _context.Database.BeginTransactionAsync(cancellationToken);
         try
         {
-            await _context.SaveChangesAsync();
-            await ctxTransaction.CommitAsync();
-            return true;
+            await _context.SaveChangesAsync(cancellationToken);
+            await ctxTransaction.CommitAsync(cancellationToken);
         }
         catch (Exception)
         {
-            await ctxTransaction.RollbackAsync();
-            return false;
+            await ctxTransaction.RollbackAsync(cancellationToken);
+            throw;
         }
     }
 
+    /// <summary>
+    ///     Gets a repository for a specific entity type.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type for the repository.</typeparam>
+    /// <returns>An instance of the repository for the specified entity type.</returns>
     public virtual IRENRepository<TEntity>? GetRENRepository<TEntity>() where TEntity : class
     {
-        return (IRENRepository<TEntity>?)Activator.CreateInstance(typeof(RENRepository<TEntity>), new object[] { _context });
+        return (IRENRepository<TEntity>?)Activator.CreateInstance(typeof(RENRepository<TEntity>), _context);
     }
 
-    public virtual Task<IRENRepository<TEntity>?> GetRENRepositoryAsync<TEntity>() where TEntity : class
+    /// <summary>
+    ///     Gets a repository for a specific entity type asynchronously.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type for the repository.</typeparam>
+    /// <returns>A task representing an instance of the repository for the specified entity type.</returns>
+    public virtual Task<IRENRepository<TEntity>?> GetRENRepositoryAsync<TEntity>(CancellationToken cancellationToken = default) where TEntity : class
     {
-        return Task.FromResult((IRENRepository<TEntity>?)Activator.CreateInstance(typeof(RENRepository<TEntity>), new object[] { _context }));
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return (IRENRepository<TEntity>?)Activator.CreateInstance(typeof(RENRepository<TEntity>), _context);
+        }, cancellationToken);
     }
 }
 ```
@@ -294,7 +337,7 @@ all function signatures:
 ```csharp
 public interface IMyUnitOfWork<TDbContext>: IRENUnitOfWork<TDbContext> where TDbContext : RENDbContext
 {
-    Task MyCustomFunction();
+    Task MyCustomFunction(CancellationToken cancellationToken = default);
 }
 ```
 
@@ -306,10 +349,15 @@ public class MyUnitOfWork<TDbContext> : RENUnitOfWork<TDbContext>, IMyUnitOfWork
 {
     public MyUnitOfWork(TDbContext context) : base(context) { }
 
-    public async Task MyCustomFunction()
+    public Task MyCustomFunction(CancellationToken cancellationToken = default)
     {
-        Console.WriteLine("This is my custom Function");
-        // other custom implementations!
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Console.WriteLine("This is my custom Function");
+            // other custom implementations!
+
+        }, cancellationToken);
     }
 }
 ```
@@ -350,7 +398,7 @@ in ```Implementing Additional Methods``` section.
 ```csharp
 public interface IMyUnitOfWork<TDbContext>: IRENUnitOfWork<TDbContext> where TDbContext : RENDbContext
 {
-    Task MyCustomFunction();
+    Task MyCustomFunction(CancellationToken cancellationToken = default);
 }
 ```
 
@@ -363,10 +411,14 @@ public class MyUnitOfWork<TDbContext> : RENUnitOfWork<TDbContext>, IMyUnitOfWork
 {
     public MyUnitOfWork(TDbContext context) : base(context) { }
 
-    public async Task MyCustomFunction()
+    public Task MyCustomFunction(CancellationToken cancellationToken = default)
     {
-        Console.WriteLine("This is my custom Function");
-        // other custom implementations!
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Console.WriteLine("This is my custom Function");
+            // other custom implementations!
+        }, cancellationToken);
     }
 
     public override Task<bool> SaveChangesAsync()
@@ -448,53 +500,171 @@ Here is the standard implementation of RENRepository which allows you to use pre
 ```csharp
 public interface IRENRepository<TEntity> where TEntity : class
 {
+    #region Create
+
+    /// <summary>
+    ///     Inserts a single entity into the repository.
+    /// </summary>
+    /// <param name="entity">The entity to insert.</param>
     void Insert(TEntity entity);
 
-    Task InsertAsync(TEntity entity);
+    /// <summary>
+    ///     Inserts a single entity into the repository asynchronously.
+    /// </summary>
+    /// <param name="entity">The entity to insert asynchronously.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    ///     Inserts a list of entities into the repository.
+    /// </summary>
+    /// <param name="entities">The list of entities to insert.</param>
     void Insert(List<TEntity> entities);
 
-    Task InsertAsync(List<TEntity> entities);
+    /// <summary>
+    ///     Inserts a list of entities into the repository asynchronously.
+    /// </summary>
+    /// <param name="entities">The list of entities to insert asynchronously.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task InsertAsync(List<TEntity> entities, CancellationToken cancellationToken = default);
 
+    #endregion
+
+    #region Read
+
+    /// <summary>
+    ///     Gets a queryable collection of entities from the repository.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <returns>A queryable collection of entities.</returns>
     IQueryable<TEntity> GetQueryable(Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null,
-        bool isReadOnly = false);
+        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false);
 
+    /// <summary>
+    ///     Gets a queryable collection of entities from the repository asynchronously.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the queryable collection of entities.</returns>
     Task<IQueryable<TEntity>> GetQueryableAsync(Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false);
-    
+        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Gets a list of entities from the repository.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <returns>A list of entities.</returns>
     List<TEntity> GetList(Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null,
-        bool isReadOnly = false);
-
-    Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
         Action<IQueryable<TEntity>> include = null, bool isReadOnly = false);
 
+    /// <summary>
+    ///     Gets a list of entities from the repository asynchronously.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the list of entities.</returns>
+    Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> filter = null,
+        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Gets a single entity from the repository.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <returns>A single entity or null if not found.</returns>
     TEntity? GetSingle(Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
         Action<IQueryable<TEntity>> include = null,
         bool isReadOnly = false);
 
+    /// <summary>
+    ///     Gets a single entity from the repository asynchronously.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the single entity or null if not found.</returns>
     Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
         Action<IQueryable<TEntity>> include = null,
-        bool isReadOnly = false);
+        bool isReadOnly = false,
+        CancellationToken cancellationToken = default);
 
+    #endregion
+
+    #region Update
+
+    /// <summary>
+    ///     Updates a single entity in the repository.
+    /// </summary>
+    /// <param name="entity">The entity to update.</param>
     void Update(TEntity entity);
 
-    Task UpdateAsync(TEntity entity);
+    /// <summary>
+    ///     Updates a single entity in the repository asynchronously.
+    /// </summary>
+    /// <param name="entity">The entity to update asynchronously.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
 
+    #endregion
+
+    #region Delete
+
+    /// <summary>
+    ///     Deletes a single entity from the repository.
+    /// </summary>
+    /// <param name="entity">The entity to delete.</param>
     void Delete(TEntity entity);
-    
-    Task DeleteAsync(TEntity entity);
-    
+
+    /// <summary>
+    ///     Deletes a single entity from the repository asynchronously.
+    /// </summary>
+    /// <param name="entity">The entity to delete asynchronously.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Deletes a list of entities from the repository.
+    /// </summary>
+    /// <param name="entities">The list of entities to delete.</param>
     void Delete(List<TEntity> entities);
-    
-    Task DeleteAsync(List<TEntity> entities);
+
+    /// <summary>
+    ///     Deletes a list of entities from the repository asynchronously.
+    /// </summary>
+    /// <param name="entities">The list of entities to delete asynchronously.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task DeleteAsync(List<TEntity> entities, CancellationToken cancellationToken = default);
+
+    #endregion
 }
 
 public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : class
@@ -502,43 +672,72 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     private readonly DbContext _context;
     private readonly DbSet<TEntity> _dbSet;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="RENRepository{TEntity}" /> class.
+    /// </summary>
+    /// <param name="context">The database context.</param>
     public RENRepository(DbContext context)
     {
         _context = context ?? throw new ArgumentNullException("context");
         _dbSet = context.Set<TEntity>();
     }
 
+    #region Create
+
+    /// <summary>
+    ///     Inserts a single entity into the database.
+    /// </summary>
+    /// <param name="entity">The entity to insert.</param>
     public virtual void Insert(TEntity entity)
     {
         _dbSet.Add(entity);
     }
 
-    public virtual async Task InsertAsync(TEntity entity)
+    /// <summary>
+    ///     Inserts a single entity into the repository asynchronously.
+    /// </summary>
+    /// <param name="entity">The entity to insert asynchronously.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual async Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        await _dbSet.AddAsync(entity);
+        cancellationToken.ThrowIfCancellationRequested();
+        await _dbSet.AddAsync(entity, cancellationToken);
     }
-    
+
+    /// <summary>
+    ///     Inserts a list of entities into the database.
+    /// </summary>
+    /// <param name="entities">The list of entities to insert.</param>
     public virtual void Insert(List<TEntity> entities)
     {
         _dbSet.AddRange(entities);
     }
-    
-    public virtual async Task InsertAsync(List<TEntity> entities)
+
+    /// <summary>
+    ///     Inserts a list of entities into the repository asynchronously.
+    /// </summary>
+    /// <param name="entities">The list of entities to insert asynchronously.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual async Task InsertAsync(List<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        await _dbSet.AddRangeAsync(entities);
+        cancellationToken.ThrowIfCancellationRequested();
+        await _dbSet.AddRangeAsync(entities, cancellationToken);
     }
 
-    public virtual void Update(TEntity entity)
-    {
-        _context.Entry(entity).State = EntityState.Modified;
-    }
-    
-    public virtual Task UpdateAsync(TEntity entity)
-    {
-        _context.Entry(entity).State = EntityState.Modified;
-        return Task.CompletedTask;
-    }
-    
+    #endregion
+
+    #region Read
+
+    /// <summary>
+    ///     Gets a queryable collection of entities from the repository.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <returns>A queryable collection of entities.</returns>
     public virtual IQueryable<TEntity> GetQueryable(Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
         Action<IQueryable<TEntity>> include = null, bool isReadOnly = false)
@@ -554,37 +753,76 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
 
         return orderBy != null ? orderBy(query) : query;
     }
-    
+
+    /// <summary>
+    ///     Gets a queryable collection of entities from the repository asynchronously.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the queryable collection of entities.</returns>
     public virtual Task<IQueryable<TEntity>> GetQueryableAsync(Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false)
+        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false, CancellationToken cancellationToken = default)
     {
-        IQueryable<TEntity> query = _dbSet;
-        include?.Invoke(query);
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
-        if (isReadOnly)
-            query = query.AsNoTracking();
+            IQueryable<TEntity> query = _dbSet;
+            include?.Invoke(query);
 
-        if (filter != null)
-            query = query.Where(filter);
+            if (isReadOnly)
+                query = query.AsNoTracking();
 
-        return Task.FromResult(orderBy != null ? orderBy(query) : query);
+            if (filter != null)
+                query = query.Where(filter);
+
+            return orderBy != null ? orderBy(query) : query;
+        }, cancellationToken);
     }
 
+    /// <summary>
+    ///     Gets a list of entities from the database.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <returns>A list of entities.</returns>
     public virtual List<TEntity> GetList(Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
         Action<IQueryable<TEntity>> include = null, bool isReadOnly = false)
     {
         return GetQueryable(filter, orderBy, include, isReadOnly).ToList();
     }
-    
+
+    /// <summary>
+    ///     Gets a list of entities from the repository asynchronously.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the list of entities.</returns>
     public virtual Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false)
+        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false, CancellationToken cancellationToken = default)
     {
-        return GetQueryableAsync(filter, orderBy, include, isReadOnly).Result.ToListAsync();
+        return GetQueryableAsync(filter, orderBy, include, isReadOnly, cancellationToken).Result.ToListAsync(cancellationToken);
     }
 
+    /// <summary>
+    ///     Gets a single entity from the database.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <returns>A single entity or null if not found.</returns>
     public virtual TEntity? GetSingle(Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
         Action<IQueryable<TEntity>> include = null,
@@ -592,36 +830,106 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     {
         return GetQueryable(filter, orderBy, include, isReadOnly).SingleOrDefault();
     }
-    
+
+    /// <summary>
+    ///     Gets a single entity from the repository asynchronously.
+    /// </summary>
+    /// <param name="filter">An optional filter expression.</param>
+    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="include">An optional include expression.</param>
+    /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the single entity or null if not found.</returns>
     public virtual Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> filter = null,
         Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
         Action<IQueryable<TEntity>> include = null,
-        bool isReadOnly = false)
+        bool isReadOnly = false,
+        CancellationToken cancellationToken = default)
     {
-        return GetQueryableAsync(filter, orderBy, include, isReadOnly).Result.SingleOrDefaultAsync();
+        return GetQueryableAsync(filter, orderBy, include, isReadOnly, cancellationToken).Result.SingleOrDefaultAsync(cancellationToken);
     }
 
+    #endregion
+    
+    #region Update
+
+    /// <summary>
+    ///     Updates a single entity in the database.
+    /// </summary>
+    /// <param name="entity">The entity to update.</param>
+    public virtual void Update(TEntity entity)
+    {
+        _context.Entry(entity).State = EntityState.Modified;
+    }
+
+    /// <summary>
+    ///     Updates a single entity in the repository asynchronously.
+    /// </summary>
+    /// <param name="entity">The entity to update asynchronously.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    {
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            _context.Entry(entity).State = EntityState.Modified;
+        }, cancellationToken);
+    }
+
+    #endregion
+
+    #region Delete
+
+    /// <summary>
+    ///     Deletes a single entity from the database.
+    /// </summary>
+    /// <param name="entity">The entity to delete.</param>
     public virtual void Delete(TEntity entity)
     {
         _dbSet.Remove(entity);
     }
-    
-    public virtual Task DeleteAsync(TEntity entity)
+
+    /// <summary>
+    ///     Deletes a single entity from the repository asynchronously.
+    /// </summary>
+    /// <param name="entity">The entity to delete asynchronously.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        _dbSet.Remove(entity);
-        return Task.CompletedTask;
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return _dbSet.Remove(entity);
+        }, cancellationToken);
     }
 
+    /// <summary>
+    ///     Deletes a list of entities from the database.
+    /// </summary>
+    /// <param name="entities">The list of entities to delete.</param>
     public virtual void Delete(List<TEntity> entities)
     {
         _dbSet.RemoveRange(entities);
     }
-    
-    public virtual Task DeleteAsync(List<TEntity> entities)
+
+    /// <summary>
+    ///     Deletes a list of entities from the repository asynchronously.
+    /// </summary>
+    /// <param name="entities">The list of entities to delete asynchronously.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual Task DeleteAsync(List<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        _dbSet.RemoveRange(entities);
-        return Task.CompletedTask;
-    }    
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            _dbSet.RemoveRange(entities);
+        }, cancellationToken);
+    }
+
+    #endregion
 }
 ```
 
@@ -667,11 +975,11 @@ public class MyRepository<TEntity> : RENRepository<TEntity> where TEntity : clas
     public MyRepository(RENDbContext context) : base(context) { }
 
     public override Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false)
+        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false, CancellationToken cancellationToken = default)
     {
         Console.WriteLine("Getting......");
         // Custom implementations
-        return base.GetSingleAsync(filter, orderBy, include, isReadOnly);
+        return base.GetSingleAsync(filter, orderBy, include, isReadOnly, cancellationToken);
     }
 }
 ```
@@ -736,7 +1044,7 @@ new interface should contain additional methods:
 ```csharp
 public interface IMyRepository<TEntity> : IRENRepository<TEntity> where TEntity : class
 {
-    Task MyCustomFunction();
+    Task MyCustomFunction(CancellationToken cancellationToken = default);
 }
 ```
 
@@ -747,10 +1055,15 @@ public class MyRepository<TEntity> : RENRepository<TEntity>, IMyRepository<TEnti
 {
     public MyRepository(RENDbContext context) : base(context) { }
 
-    public async Task MyCustomFunction()
+    public Task MyCustomFunction(CancellationToken cancellationToken = default)
     {
-        Console.WriteLine("This is my custom Function");
-        // other custom implementations!
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Console.WriteLine("This is my custom Function");
+            // other custom implementations!
+
+        }, cancellationToken);
     }
 }
 ```
@@ -816,7 +1129,7 @@ To use both you have to combine two methods. First create the IMyRepository Inte
 ```csharp
 public interface IMyRepository<TEntity> : IRENRepository<TEntity> where TEntity : class
 {
-    Task MyCustomFunction();
+    Task MyCustomFunction(CancellationToken cancellationToken = default);
 }
 ```
 
@@ -829,17 +1142,22 @@ public class MyRepository<TEntity> : RENRepository<TEntity>, IMyRepository<TEnti
     public MyRepository(RENDbContext context) : base(context) { }
 
     public override Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false)
+        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false, CancellationToken cancellationToken = default)
     {
         Console.WriteLine("Getting custom async......");
-        // Custom implementations
-        return base.GetSingleAsync(filter, orderBy, include, isReadOnly);
+        // Other custom implementations
+        return base.GetSingleAsync(filter, orderBy, include, isReadOnly, cancellationToken);
     }
 
-    public async Task MyCustomFunction()
+    public Task MyCustomFunction(CancellationToken cancellationToken = default)
     {
-        Console.WriteLine("This is my custom Function");
-        // other custom implementations!
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Console.WriteLine("This is my custom Function");
+            // other custom implementations!
+
+        }, cancellationToken);
     }
 }
 ```
