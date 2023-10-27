@@ -10,54 +10,50 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
 {
     protected readonly TDbContext _context;
 
-    private bool disposed;
-
     /// <summary>
     ///     Initializes a new instance of the <see cref="RENUnitOfWork{TDbContext}" /> class.
     /// </summary>
     /// <param name="context">The database context to be used within the unit of work.</param>
     public RENUnitOfWork(TDbContext context)
     {
-        _context = context ?? throw new ArgumentNullException("context");
+        _context = context ?? throw new ArgumentNullException(nameof(TDbContext));
     }
 
     /// <summary>
     ///     Commits the changes made in the unit of work to the database.
     /// </summary>
-    /// <returns>True if the changes are successfully saved; otherwise, false.</returns>
-    public virtual bool SaveChanges()
+    public virtual void SaveChanges()
     {
         using var ctxTransaction = _context.Database.BeginTransaction();
         try
         {
             _context.SaveChanges();
             ctxTransaction.Commit();
-            return true;
         }
         catch (Exception)
         {
             ctxTransaction.Rollback();
-            return false;
+            throw;
         }
     }
 
     /// <summary>
     ///     Commits the changes made in the unit of work to the database asynchronously.
     /// </summary>
-    /// <returns>A task representing the success of saving the changes (true if successful; otherwise, false).</returns>
-    public virtual async Task<bool> SaveChangesAsync()
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        await using var ctxTransaction = await _context.Database.BeginTransactionAsync();
+        cancellationToken.ThrowIfCancellationRequested();
+        await using var ctxTransaction = await _context.Database.BeginTransactionAsync(cancellationToken);
         try
         {
-            await _context.SaveChangesAsync();
-            await ctxTransaction.CommitAsync();
-            return true;
+            await _context.SaveChangesAsync(cancellationToken);
+            await ctxTransaction.CommitAsync(cancellationToken);
         }
         catch (Exception)
         {
-            await ctxTransaction.RollbackAsync();
-            return false;
+            await ctxTransaction.RollbackAsync(cancellationToken);
+            throw;
         }
     }
 
@@ -76,8 +72,12 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
     /// </summary>
     /// <typeparam name="TEntity">The entity type for the repository.</typeparam>
     /// <returns>A task representing an instance of the repository for the specified entity type.</returns>
-    public virtual Task<IRENRepository<TEntity>?> GetRENRepositoryAsync<TEntity>() where TEntity : class
+    public virtual Task<IRENRepository<TEntity>?> GetRENRepositoryAsync<TEntity>(CancellationToken cancellationToken = default) where TEntity : class
     {
-        return Task.FromResult((IRENRepository<TEntity>?)Activator.CreateInstance(typeof(RENRepository<TEntity>), _context));
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return (IRENRepository<TEntity>?)Activator.CreateInstance(typeof(RENRepository<TEntity>), _context);
+        }, cancellationToken);
     }
 }

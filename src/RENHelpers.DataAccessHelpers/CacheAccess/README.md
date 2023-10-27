@@ -70,22 +70,132 @@ Here is the content of IRENCacheService:
 ```csharp
 public interface IRENCacheService
 {
+    /// <summary>
+    /// Retrieves data of type <typeparamref name="T"/> from the cache.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="cacheKey">The key associated with the cached data.</param>
+    /// <returns>The cached T value.</returns>
     T Get<T>(string cacheKey);
-    Task<T> GetAsync<T>(string cacheKey);
+    
+    /// <summary>
+    /// Asynchronously retrieves data of type <typeparamref name="T"/> from the cache.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="cacheKey">The key associated with the cached data.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the cached T value.</returns>
+    Task<T> GetAsync<T>(string cacheKey, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Retrieves a string value from the cache.
+    /// </summary>
+    /// <param name="cacheKey">The key associated with the cached string.</param>
+    /// <returns>The cached string value.</returns>
     string Get(string cacheKey);
-    Task<string> GetAsync(string cacheKey);
+    
+    /// <summary>
+    /// Asynchronously retrieves a string value from the cache.
+    /// </summary>
+    /// <param name="cacheKey">The key associated with the cached string.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the cached string value.</returns>
+    Task<string> GetAsync(string cacheKey, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Retrieves a list of data of type <typeparamref name="T"/> that matches the specified pattern.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <returns>A list of cached data items typed <typeparamref name="T"/>.</returns>
     List<T> GetByPattern<T>(string pattern = "*");
-    Task<List<T>> GetByPatternAsync<T>(string pattern = "*");
+    
+    /// <summary>
+    /// Asynchronously retrieves a list of data of type <typeparamref name="T"/> that matches the specified pattern.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing a list of cached data items typed <typeparamref name="T"/>.</returns>
+    Task<List<T>> GetByPatternAsync<T>(string pattern = "*", CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Retrieves a list of string keys that match the specified pattern in the cache.
+    /// </summary>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <returns>A list of cached string keys.</returns>
     List<string> GetByPattern(string pattern = "*");
-    Task<List<string>> GetByPatternAsync(string pattern = "*");
+    
+    /// <summary>
+    /// Asynchronously retrieves a list of string keys that match the specified pattern in the cache.
+    /// </summary>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing a list of cached string keys.</returns>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task<List<string>> GetByPatternAsync(string pattern = "*", CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Sets data of type <typeparamref name="T"/> in the cache with optional expiration settings.
+    /// </summary>
+    /// <typeparam name="T">The type of data to store in the cache.</typeparam>
+    /// <param name="cacheKey">The key for storing the data in the cache.</param>
+    /// <param name="data">The data to cache of type <typeparamref name="T"/>.</param>
+    /// <param name="absoluteExpiration">The optional absolute expiration time for the cached data.</param>
+    /// <param name="slidingExpiration">The optional sliding expiration time for the cached data.</param>
     void Set<T>(string cacheKey, T data, TimeSpan? absoluteExpiration = null, TimeSpan? slidingExpiration = null);
-    Task SetAsync<T>(string cacheKey, T data, TimeSpan? absoluteExpiration = null, TimeSpan? slidingExpiration = null);
+    
+    /// <summary>
+    /// Asynchronously sets data of type <typeparamref name="T"/> in the cache with optional expiration settings.
+    /// </summary>
+    /// <typeparam name="T">The type of data to store in the cache.</typeparam>
+    /// <param name="cacheKey">The key for storing the data in the cache.</param>
+    /// <param name="data">The data to cache of type <typeparamref name="T"/>.</param>
+    /// <param name="absoluteExpiration">The optional absolute expiration time for the cached data.</param>
+    /// <param name="slidingExpiration">The optional sliding expiration time for the cached data.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task SetAsync<T>(string cacheKey, T data, TimeSpan? absoluteExpiration = null, TimeSpan? slidingExpiration = null, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Deletes cache values by key pattern.
+    /// </summary>
+    /// <param name="pattern">The pattern for cache keys to be deleted.</param>
     void DeleteKeysByPattern(string pattern = "*");
-    Task DeleteKeysByPatternAsync(string pattern = "*");
+    
+    /// <summary>
+    /// Asynchronously deletes cache values by key pattern.
+    /// </summary>
+    /// <param name="pattern">The pattern for cache keys to be deleted.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task DeleteKeysByPatternAsync(string pattern = "*", CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Removes cache value by key.
+    /// </summary>
+    /// <param name="cacheKey">The key to be deleted.</param>
     void Remove(string cacheKey);
-    Task RemoveAsync(string cacheKey);
+    
+    /// <summary>
+    /// Asynchronously removes cache value by key.
+    /// </summary>
+    /// <param name="cacheKey">The key to be deleted.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task RemoveAsync(string cacheKey, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Clears the database.
+    /// </summary>
     void Clear();
-    Task ClearAsync();
+    
+    /// <summary>
+    /// Asynchronously clears the database.
+    /// </summary>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task ClearAsync(CancellationToken cancellationToken = default);
 }
 ```
 
@@ -114,58 +224,131 @@ public class RENInMemoryCacheService : IRENCacheService
 {
     private readonly IMemoryCache _cache;
     private readonly HashSet<string> CacheKeys;
+    private MemoryCacheEntryOptions _cacheOptions;
     private int _defaultAbsoluteExpirationHours;
     private int _defaultSlidingExpirationMinutes;
-    private MemoryCacheEntryOptions _cacheOptions;
 
-    protected RENInMemoryCacheService(IMemoryCache cache)
+    public RENInMemoryCacheService(IConfiguration configuration, IMemoryCache cache)
     {
+        SetDefaults(configuration);
         _cache = cache;
         CacheKeys = new HashSet<string>();
     }
 
+    /// <summary>
+    /// Retrieves data of type <typeparamref name="T"/> from the cache.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="cacheKey">The key associated with the cached data.</param>
+    /// <returns>The cached T value.</returns>
     public virtual T Get<T>(string cacheKey)
     {
         return (T)_cache.Get(cacheKey);
     }
 
-    public virtual Task<T> GetAsync<T>(string cacheKey)
+    /// <summary>
+    /// Asynchronously retrieves data of type <typeparamref name="T"/> from the cache.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="cacheKey">The key associated with the cached data.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the cached T value.</returns>
+    public virtual Task<T> GetAsync<T>(string cacheKey, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Get<T>(cacheKey));
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Get<T>(cacheKey);
+        }, cancellationToken);
     }
 
+    /// <summary>
+    /// Retrieves a string value from the cache.
+    /// </summary>
+    /// <param name="cacheKey">The key associated with the cached string.</param>
+    /// <returns>The cached string value.</returns>
     public virtual string Get(string cacheKey)
     {
-        return _cache.Get(cacheKey) as string;
+        return _cache.Get(cacheKey).ToString();
     }
 
-    public virtual Task<string> GetAsync(string cacheKey)
+    /// <summary>
+    /// Asynchronously retrieves a string value from the cache.
+    /// </summary>
+    /// <param name="cacheKey">The key associated with the cached string.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the cached string value.</returns>
+    public virtual Task<string> GetAsync(string cacheKey, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Get(cacheKey));
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Get(cacheKey);
+        }, cancellationToken);
     }
 
+    /// <summary>
+    /// Retrieves a list of data of type <typeparamref name="T"/> that matches the specified pattern.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <returns>A list of cached data items typed <typeparamref name="T"/>.</returns>
     public virtual List<T> GetByPattern<T>(string pattern = "*")
     {
         var keys = GetKeysFromPattern(pattern);
         return keys.Select(Get<T>).ToList();
     }
 
-    public virtual Task<List<T>> GetByPatternAsync<T>(string pattern = "*")
+    /// <summary>
+    /// Asynchronously retrieves a list of data of type <typeparamref name="T"/> that matches the specified pattern.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing a list of cached data items typed <typeparamref name="T"/>.</returns>
+    public virtual Task<List<T>> GetByPatternAsync<T>(string pattern = "*", CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(GetByPattern<T>(pattern));
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return GetByPattern<T>(pattern);
+        }, cancellationToken);
     }
 
+    /// <summary>
+    /// Retrieves a list of string keys that match the specified pattern in the cache.
+    /// </summary>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <returns>A list of cached string keys.</returns>
     public virtual List<string> GetByPattern(string pattern = "*")
     {
         var keys = GetKeysFromPattern(pattern);
         return keys.Select(Get).ToList();
     }
 
-    public virtual Task<List<string>> GetByPatternAsync(string pattern = "*")
+    /// <summary>
+    /// Asynchronously retrieves a list of string keys that match the specified pattern in the cache.
+    /// </summary>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing a list of cached string keys.</returns>
+    public virtual Task<List<string>> GetByPatternAsync(string pattern = "*", CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(GetByPattern(pattern));
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return GetByPattern(pattern);
+        }, cancellationToken);
     }
 
+    /// <summary>
+    /// Sets data of type <typeparamref name="T"/> in the cache with optional expiration settings.
+    /// </summary>
+    /// <typeparam name="T">The type of data to store in the cache.</typeparam>
+    /// <param name="cacheKey">The key for storing the data in the cache.</param>
+    /// <param name="data">The data to cache of type <typeparamref name="T"/>.</param>
+    /// <param name="absoluteExpiration">The optional absolute expiration time for the cached data.</param>
+    /// <param name="slidingExpiration">The optional sliding expiration time for the cached data.</param>
     public virtual void Set<T>(string cacheKey, T data, TimeSpan? absoluteExpiration = null, TimeSpan? slidingExpiration = null)
     {
         var options = absoluteExpiration == null && slidingExpiration == null ? _cacheOptions : new MemoryCacheEntryOptions();
@@ -180,57 +363,110 @@ public class RENInMemoryCacheService : IRENCacheService
         CacheKeys.Add(cacheKey);
     }
 
-    public virtual Task SetAsync<T>(string cacheKey, T data, TimeSpan? absoluteExpiration = null, TimeSpan? slidingExpiration = null)
+    /// <summary>
+    /// Asynchronously sets data of type <typeparamref name="T"/> in the cache with optional expiration settings.
+    /// </summary>
+    /// <typeparam name="T">The type of data to store in the cache.</typeparam>
+    /// <param name="cacheKey">The key for storing the data in the cache.</param>
+    /// <param name="data">The data to cache of type <typeparamref name="T"/>.</param>
+    /// <param name="absoluteExpiration">The optional absolute expiration time for the cached data.</param>
+    /// <param name="slidingExpiration">The optional sliding expiration time for the cached data.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual Task SetAsync<T>(string cacheKey, T data, TimeSpan? absoluteExpiration = null, TimeSpan? slidingExpiration = null, CancellationToken cancellationToken = default)
     {
-        return Task.Run(() => Set(cacheKey, data, absoluteExpiration, slidingExpiration));
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Set(cacheKey, data, absoluteExpiration, slidingExpiration);
+        }, cancellationToken);
     }
 
+    /// <summary>
+    /// Deletes cache values by key pattern.
+    /// </summary>
+    /// <param name="pattern">The pattern for cache keys to be deleted.</param>
     public virtual void DeleteKeysByPattern(string pattern = "*")
     {
         var keysToDelete = GetKeysFromPattern(pattern);
         foreach (var key in keysToDelete) _cache.Remove(key);
     }
 
-    public virtual Task DeleteKeysByPatternAsync(string pattern = "*")
+    /// <summary>
+    /// Asynchronously deletes cache values by key pattern.
+    /// </summary>
+    /// <param name="pattern">The pattern for cache keys to be deleted.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual Task DeleteKeysByPatternAsync(string pattern = "*", CancellationToken cancellationToken = default)
     {
-        return Task.Run(() => DeleteKeysByPattern(pattern));
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            DeleteKeysByPattern(pattern);
+        }, cancellationToken);
     }
 
+    /// <summary>
+    /// Removes cache value by key.
+    /// </summary>
+    /// <param name="cacheKey">The key to be deleted.</param>
     public virtual void Remove(string cacheKey)
     {
         _cache.Remove(cacheKey);
         CacheKeys.Remove(cacheKey);
     }
 
-    public virtual Task RemoveAsync(string cacheKey)
+    /// <summary>
+    /// Asynchronously removes cache value by key.
+    /// </summary>
+    /// <param name="cacheKey">The key to be deleted.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual Task RemoveAsync(string cacheKey, CancellationToken cancellationToken = default)
     {
-        return Task.Run(() => Remove(cacheKey));
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Remove(cacheKey);
+        }, cancellationToken);
     }
 
+    /// <summary>
+    /// Clears the database.
+    /// </summary>
     public virtual void Clear()
     {
         foreach (var key in CacheKeys) _cache.Remove(key);
     }
 
-    public virtual Task ClearAsync()
+    /// <summary>
+    /// Asynchronously clears the database.
+    /// </summary>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        return Task.Run(Clear);
+        return Task.Factory.StartNew(()=>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Clear();
+        }, cancellationToken);
     }
 
     private void ConsolidateKeys()
     {
         var invalidKeys = CacheKeys.Where(key => !_cache.TryGetValue(key, out _)).ToList();
-        foreach (var key in invalidKeys)
-        {
-            CacheKeys.Remove(key);
-        }
+        foreach (var key in invalidKeys) CacheKeys.Remove(key);
     }
 
     private void SetDefaults(IConfiguration configuration)
     {
-        _defaultAbsoluteExpirationHours = int.Parse(configuration.GetSection("CacheConfiguration:InMemoryConfiguraton:TimeConfiguration:AbsoluteExpirationInHours")?.Value ?? "12");
+        _defaultAbsoluteExpirationHours =
+            int.Parse(configuration.GetSection("CacheConfiguration:InMemoryConfiguration:TimeConfiguration:AbsoluteExpirationInHours")?.Value ?? "12");
         _defaultSlidingExpirationMinutes =
-            int.Parse(configuration.GetSection("CacheConfiguration:InMemoryConfiguraton:TimeConfiguration:SlidingExpirationInMinutes")?.Value ?? "30");
+            int.Parse(configuration.GetSection("CacheConfiguration:InMemoryConfiguration:TimeConfiguration:SlidingExpirationInMinutes")?.Value ?? "30");
         _cacheOptions = new MemoryCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(_defaultAbsoluteExpirationHours),
@@ -242,7 +478,7 @@ public class RENInMemoryCacheService : IRENCacheService
     {
         ConsolidateKeys();
 
-        return pattern == "*" ? CacheKeys : CacheKeys.Where(_ => _.Contains(pattern));
+        return pattern == "*" ? CacheKeys : CacheKeys.Where(key => key.Contains(pattern));
     }
 }
 ```
@@ -311,11 +547,11 @@ public class MyCacheService : RENInMemoryCacheService
 {
     public MyCacheService(IMemoryCache cache) : base(cache) { }
 
-    public override async Task<T> GetAsync<T>(string cacheKey)
+    public override async Task<T> GetAsync<T>(string cacheKey, CancellationToken cancellationToken = default)
     {
         Console.WriteLine("Getting custom...");
         //custom implementations
-        return await base.GetAsync<T>(cacheKey);
+        return await base.GetAsync<T>(cacheKey, cancellationToken);
     }
 }
 ```
@@ -366,7 +602,7 @@ Surely you should be able to implement new functions addition to existing one if
 ```csharp
 public interface IMyCacheService: IRENCacheService
 {
-    Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate);
+    Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate, CancellationToken cancellationToken = default);
 }
 ```
 
@@ -377,11 +613,11 @@ public class MyCacheService : RENInMemoryCacheService, IMyCacheService
 {
     public MyCacheService(IMemoryCache cache) : base(cache) { }
     
-    public async Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate)
+    public async Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate, CancellationToken cancellationToken = default)
     {
         Console.WriteLine("Getting single custom...");
         // custom implementations
-        return (await base.GetAsync<IEnumerable<T>>(cacheKey)).SingleOrDefault(predicate);
+        return (await base.GetAsync<IEnumerable<T>>(cacheKey, cancellationToken)).SingleOrDefault(predicate);
     }
 }
 ```
@@ -434,7 +670,7 @@ To use both you have to combine two methods. First create the IMyCacheService In
 ```csharp
 public interface IMyCacheService: IRENCacheService
 {
-    Task<T> GetSingleAsync<T>(string cacheKey, Func<T, bool> predicate);
+    Task<T> GetSingleAsync<T>(string cacheKey, Func<T, bool> predicate, CancellationToken cancellationToken = default);
 }
 ```
 
@@ -444,7 +680,7 @@ public class MyCacheService : RENInMemoryCacheService, IMyCacheService
 {
     public MyCacheService(IMemoryCache cache) : base(cache) { }
 
-    public override async Task<T> GetAsync<T>(string cacheKey)
+    public override async Task<T> GetAsync<T>(string cacheKey, CancellationToken cancellationToken = default)
     {
         Console.WriteLine("Getting custom...");
         //custom implementations
@@ -453,10 +689,10 @@ public class MyCacheService : RENInMemoryCacheService, IMyCacheService
 
     // This method can share the same name as one of it's ancestor's functions
     // but since this method has different signatur it's okay!
-    public async Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate)
+    public async Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate, CancellationToken cancellationToken = default)
     {
         Console.WriteLine("Getting single custom...");
-        var result = await base.GetAsync<IEnumerable<T>>(cacheKey);
+        var result = await base.GetAsync<IEnumerable<T>>(cacheKey, cancellationToken);
         return result == null ? default : result.SingleOrDefault(predicate);
     }
 }
@@ -545,7 +781,6 @@ RENRedisCacheService is a service that allows you to handle cache operations in 
 public class RENRedisCacheService : IRENCacheService
 {
     private IDatabase _cacheDb;
-    private DistributedCacheEntryOptions _cacheOptions;
     private ConnectionMultiplexer _connection;
     private int _defaultAbsoluteExpirationHours;
 
@@ -555,28 +790,60 @@ public class RENRedisCacheService : IRENCacheService
         Connect(configuration);
     }
 
+    /// <summary>
+    /// Retrieves data of type <typeparamref name="T"/> from the cache.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="cacheKey">The key associated with the cached data.</param>
+    /// <returns>The cached T value.</returns>
     public virtual T Get<T>(string cacheKey)
     {
         var data = _cacheDb.StringGet(cacheKey);
         return data.HasValue ? JsonConvert.DeserializeObject<T>(data) : default;
     }
 
-    public virtual async Task<T> GetAsync<T>(string cacheKey)
+    /// <summary>
+    /// Asynchronously retrieves data of type <typeparamref name="T"/> from the cache.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="cacheKey">The key associated with the cached data.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the cached T value.</returns>
+    public virtual async Task<T> GetAsync<T>(string cacheKey, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var data = await _cacheDb.StringGetAsync(cacheKey);
         return data.HasValue ? JsonConvert.DeserializeObject<T>(data) : default;
     }
 
+    /// <summary>
+    /// Retrieves a string value from the cache.
+    /// </summary>
+    /// <param name="cacheKey">The key associated with the cached string.</param>
+    /// <returns>The cached string value.</returns>
     public virtual string Get(string cacheKey)
     {
         return _cacheDb.StringGet(cacheKey);
     }
 
-    public virtual async Task<string> GetAsync(string cacheKey)
+    /// <summary>
+    /// Asynchronously retrieves a string value from the cache.
+    /// </summary>
+    /// <param name="cacheKey">The key associated with the cached string.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing the cached string value.</returns>
+    public virtual async Task<string> GetAsync(string cacheKey, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         return await _cacheDb.StringGetAsync(cacheKey);
     }
 
+    /// <summary>
+    /// Retrieves a list of data of type <typeparamref name="T"/> that matches the specified pattern.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <returns>A list of cached data items typed <typeparamref name="T"/>.</returns>
     public virtual List<T> GetByPattern<T>(string pattern = "*")
     {
         var server = _connection.GetServer(_connection.GetEndPoints().First());
@@ -584,23 +851,54 @@ public class RENRedisCacheService : IRENCacheService
         return keys.Select(Get<T>).ToList();
     }
 
-    public virtual Task<List<T>> GetByPatternAsync<T>(string pattern = "*")
+    /// <summary>
+    /// Asynchronously retrieves a list of data of type <typeparamref name="T"/> that matches the specified pattern.
+    /// </summary>
+    /// <typeparam name="T">The type of data to retrieve.</typeparam>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing a list of cached data items typed <typeparamref name="T"/>.</returns>
+    public virtual Task<List<T>> GetByPatternAsync<T>(string pattern = "*", CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(GetByPattern<T>(pattern));
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.Factory.StartNew(() => GetByPattern<T>(pattern), cancellationToken);
     }
 
+    /// <summary>
+    /// Retrieves a list of string keys that match the specified pattern in the cache.
+    /// </summary>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <returns>A list of cached string keys.</returns>
     public virtual List<string> GetByPattern(string pattern = "*")
     {
         var server = _connection.GetServer(_connection.GetEndPoints().First());
         return server.Keys(pattern: pattern).Select(key => (string)key).ToList();
     }
 
-    public virtual async Task<List<string>> GetByPatternAsync(string pattern = "*")
+    /// <summary>
+    /// Asynchronously retrieves a list of string keys that match the specified pattern in the cache.
+    /// </summary>
+    /// <param name="pattern">The pattern to match keys in the cache.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A task representing a list of cached string keys.</returns>
+    public virtual Task<List<string>> GetByPatternAsync(string pattern = "*", CancellationToken cancellationToken = default)
     {
-        var server = _connection.GetServer(_connection.GetEndPoints().First());
-        return server.Keys(pattern: pattern).Select(key => (string)key).ToList();
+        return Task.Factory.StartNew(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var server = _connection.GetServer(_connection.GetEndPoints().First());
+            return server.Keys(pattern: pattern).Select(key => (string)key).ToList();
+        }, cancellationToken);
     }
 
+    /// <summary>
+    /// Sets data of type <typeparamref name="T"/> in the cache with optional expiration settings.
+    /// </summary>
+    /// <typeparam name="T">The type of data to store in the cache.</typeparam>
+    /// <param name="cacheKey">The key for storing the data in the cache.</param>
+    /// <param name="data">The data to cache of type <typeparamref name="T"/>.</param>
+    /// <param name="absoluteExpiration">The optional absolute expiration time for the cached data.</param>
+    /// <param name="slidingExpiration">The optional sliding expiration time for the cached data.</param>
     public virtual void Set<T>(string cacheKey, T data, TimeSpan? absoluteExpiration = null, TimeSpan? slidingExpiration = null)
     {
         var expiration = GetAbsoluteExpiration(absoluteExpiration);
@@ -608,13 +906,28 @@ public class RENRedisCacheService : IRENCacheService
         _cacheDb.StringSet(cacheKey, JsonConvert.SerializeObject(data), expiration);
     }
 
-    public virtual async Task SetAsync<T>(string cacheKey, T data, TimeSpan? absoluteExpiration = null, TimeSpan? slidingExpiration = null)
+    /// <summary>
+    /// Asynchronously sets data of type <typeparamref name="T"/> in the cache with optional expiration settings.
+    /// </summary>
+    /// <typeparam name="T">The type of data to store in the cache.</typeparam>
+    /// <param name="cacheKey">The key for storing the data in the cache.</param>
+    /// <param name="data">The data to cache of type <typeparamref name="T"/>.</param>
+    /// <param name="absoluteExpiration">The optional absolute expiration time for the cached data.</param>
+    /// <param name="slidingExpiration">The optional sliding expiration time for the cached data.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    public virtual async Task SetAsync<T>(string cacheKey, T data, TimeSpan? absoluteExpiration = null, TimeSpan? slidingExpiration = null,
+        CancellationToken cancellationToken = default)
     {
-        var expiration = GetAbsoluteExpiration(absoluteExpiration);
+        cancellationToken.ThrowIfCancellationRequested();
 
+        var expiration = GetAbsoluteExpiration(absoluteExpiration);
         await _cacheDb.StringSetAsync(cacheKey, JsonConvert.SerializeObject(data), expiration);
     }
 
+    /// <summary>
+    /// Deletes cache values by key pattern.
+    /// </summary>
+    /// <param name="pattern">The pattern for cache keys to be deleted.</param>
     public virtual void DeleteKeysByPattern(string pattern = "*")
     {
         var server = _connection.GetServer(_connection.GetEndPoints().First());
@@ -622,31 +935,55 @@ public class RENRedisCacheService : IRENCacheService
         foreach (var key in keys) Remove((string)key);
     }
 
-    public virtual async Task DeleteKeysByPatternAsync(string pattern = "*")
+    /// <summary>
+    /// Asynchronously deletes cache values by key pattern.
+    /// </summary>
+    /// <param name="pattern">The pattern for cache keys to be deleted.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    public virtual async Task DeleteKeysByPatternAsync(string pattern = "*", CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var server = _connection.GetServer(_connection.GetEndPoints().First());
         var keys = server.Keys(pattern: pattern);
-        foreach (var key in keys) await RemoveAsync((string)key);
+        foreach (var key in keys) await RemoveAsync((string)key, cancellationToken);
     }
 
+    /// <summary>
+    /// Removes cache value by key.
+    /// </summary>
+    /// <param name="cacheKey">The key to be deleted.</param>
     public virtual void Remove(string cacheKey)
     {
         _cacheDb.KeyDelete(cacheKey);
     }
 
-    public virtual async Task RemoveAsync(string cacheKey)
+    /// <summary>
+    /// Asynchronously removes cache value by key.
+    /// </summary>
+    /// <param name="cacheKey">The key to be deleted.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    public virtual async Task RemoveAsync(string cacheKey, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         await _cacheDb.KeyDeleteAsync(cacheKey);
     }
 
+    /// <summary>
+    /// Clears the database.
+    /// </summary>
     public virtual void Clear()
     {
         var server = _connection.GetServer(_connection.GetEndPoints().First());
         server.FlushDatabase();
     }
 
-    public virtual async Task ClearAsync()
+    /// <summary>
+    /// Asynchronously clears the database.
+    /// </summary>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    public virtual async Task ClearAsync(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var server = _connection.GetServer(_connection.GetEndPoints().First());
         await server.FlushDatabaseAsync();
     }
@@ -749,16 +1086,16 @@ public class MyCacheService : RENRedisCacheService
 {
     public MyCacheService(IConfiguration configuration) : base(configuration) { }
 
-    public override T Get<T>(string cacheKey)
+    public override T Get<T>(string cacheKey, CancellationToken cancellationToken = default);)
     {
         Console.WriteLine("Getting...");
         //custom implementations
-        return base.Get<T>(cacheKey);
+        return base.Get<T>(cacheKey, cancellationToken);
     }
 }
 ```
 
-PLEASE BE CAREFUL about the constructors. In In Memory implementation RENInMemoryCacheService needed IMemoryCache injeciton. Here, RENRedisCacheService needs IConfiguration injection!
+PLEASE BE CAREFUL about the constructors. In In Memory implementation RENInMemoryCacheService needed IConfiguration and IMemoryCache injeciton. Here, RENRedisCacheService needs IConfiguration injection!
 
 
 Here, we overrided the existing method to expand it's functionality. From now on, we have register MyCacheService in Program.cs instead of standard registeration:
@@ -807,7 +1144,7 @@ Surely you should be able to implement new functions addition to existing one if
 ```csharp
 public interface IMyCacheService: IRENCacheService
 {
-    Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate);
+    Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate, CancellationToken cancellationToken = default);
 }
 ```
 
@@ -818,11 +1155,11 @@ public class MyCacheService : RENRedisCacheService, IMyCacheService
 {
     public MyCacheService(IConfiguration configuration) : base(configuration) { }
     
-    public async Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate)
+    public async Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate, CancellationToken cancellationToken = default);
     {
         Console.WriteLine("Getting single custom...");
         // custom implementations
-        return (await base.GetAsync<IEnumerable<T>>(cacheKey)).SingleOrDefault(predicate);
+        return (await base.GetAsync<IEnumerable<T>>(cacheKey, cancellationToken)).SingleOrDefault(predicate);
     }
 }
 ```
@@ -875,7 +1212,7 @@ To use both you have to combine two methods. First create the IMyCacheService In
 ```csharp
 public interface IMyCacheService: IRENCacheService
 {
-    Task<T> GetSingleAsync<T>(string cacheKey, Func<T, bool> predicate);
+    Task<T> GetSingleAsync<T>(string cacheKey, Func<T, bool> predicate, CancellationToken cancellationToken = default););
 }
 ```
 
@@ -886,19 +1223,19 @@ public class MyCacheService : RENRedisCacheService, IMyCacheService
 {
     public MyCacheService(IConfiguration configuration) : base(configuration) { }
 
-    public override async Task<T> GetAsync<T>(string cacheKey)
+    public override async Task<T> GetAsync<T>(string cacheKey, CancellationToken cancellationToken = default);)
     {
         Console.WriteLine("Getting custom...");
         //custom implementations
-        return base.Get<T>(cacheKey);
+        return base.Get<T>(cacheKey, cancellationToken);
     }
 
     // This method can share the same name as one of it's ancestor's functions
     // but since this method has different signatur it's okay!
-    public async Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate)
+    public async Task<T> GetSingleAsync<T>(string cacheKey, Func<T,bool> predicate, CancellationToken cancellationToken = default);)
     {
         Console.WriteLine("Getting single custom...");
-        var result = await base.GetAsync<IEnumerable<T>>(cacheKey);
+        var result = await base.GetAsync<IEnumerable<T>>(cacheKey, cancellationToken);
         return result == null ? default : result.SingleOrDefault(predicate);
     }
 }

@@ -25,16 +25,16 @@
         <Copyright>Copyright (c) 2023 Fethi Tekyaygil</Copyright>
         <Version>1.0.2</Version>
     </PropertyGroup>
-    
+
     <ItemGroup>
-      <None Update="NUGETREADME.md">
-        <Pack>true</Pack>
-        <PackagePath>\</PackagePath>
-      </None>
-      <None Update="reindeer.png">
-        <Pack>True</Pack>
-        <PackagePath></PackagePath>
-      </None>
+        <None Update="NUGETREADME.md">
+            <Pack>true</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Update="reindeer.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
     </ItemGroup>
 
 </Project>
