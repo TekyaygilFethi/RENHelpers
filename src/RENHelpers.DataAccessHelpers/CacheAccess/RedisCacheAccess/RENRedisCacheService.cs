@@ -10,7 +10,7 @@ public class RENRedisCacheService : IRENCacheService
     private ConnectionMultiplexer _connection;
     private int _defaultAbsoluteExpirationHours;
 
-    protected RENRedisCacheService(IConfiguration configuration)
+    public RENRedisCacheService(IConfiguration configuration)
     {
         SetDefaults(configuration);
         Connect(configuration);
@@ -239,10 +239,10 @@ public class RENRedisCacheService : IRENCacheService
             AbortOnConnectFail = abortOnConnectFail
         };
 
-        if (username.IsValid())
+        if (username.RENIsValid())
             options.User = username;
 
-        if (password.IsValid())
+        if (password.RENIsValid())
             options.Password = password;
 
         _connection = ConnectionMultiplexer.Connect(options);

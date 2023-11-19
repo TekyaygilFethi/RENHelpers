@@ -10,13 +10,13 @@
         <PackageProjectUrl>https://github.com/TekyaygilFethi/RENHelpers</PackageProjectUrl>
         <PackageIcon>reindeer.png</PackageIcon>
         <RepositoryUrl>https://github.com/TekyaygilFethi/RENHelpers</RepositoryUrl>
-        <PackageReleaseNotes>- added cancellation token support for asynchronous operations</PackageReleaseNotes>
+        <PackageReleaseNotes>- fixed rencacheservice </PackageReleaseNotes>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageTags>DataAccess,UnitOfWork,EntityFrameworkCode,Repository</PackageTags>
         <PackageReadmeFile>NUGETREADME.md</PackageReadmeFile>
         <Copyright>Copyright (c) 2023 Fethi Tekyaygil</Copyright>
-        <Version>1.0.51</Version>
+        <Version>1.0.52</Version>
     </PropertyGroup>
 
 
@@ -28,16 +28,14 @@
         <PackageReference Include="System.Runtime.Caching" Version="7.0.0"/>
         <None Include="NUGETREADME.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
-
-
+    
     <ItemGroup>
         <None Update="reindeer.png">
             <Pack>True</Pack>
             <PackagePath></PackagePath>
         </None>
     </ItemGroup>
-
-
+    
     <ItemGroup>
         <ProjectReference Include="..\RENHelpers.StringHelpers\RENHelpers.StringHelpers.csproj"/>
     </ItemGroup>
