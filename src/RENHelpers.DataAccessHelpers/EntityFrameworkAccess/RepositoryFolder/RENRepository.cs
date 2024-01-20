@@ -34,10 +34,10 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     }
 
     /// <summary>
-    ///     Inserts a single entity into the repository asynchronously.
+    ///     Inserts a single entity into the database asynchronously.
     /// </summary>
     /// <param name="entity">The entity to insert asynchronously.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public virtual async Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
@@ -55,10 +55,10 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     }
 
     /// <summary>
-    ///     Inserts a list of entities into the repository asynchronously.
+    ///     Inserts a list of entities into the database asynchronously.
     /// </summary>
     /// <param name="entities">The list of entities to insert asynchronously.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public virtual async Task InsertAsync(List<TEntity> entities, CancellationToken cancellationToken = default)
     {
@@ -67,23 +67,27 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     }
 
     #endregion
-
+    
     #region Read
 
     /// <summary>
-    ///     Gets a queryable collection of entities from the repository.
+    ///     Gets a queryable collection of entities from the database.
     /// </summary>
     /// <param name="filter">An optional filter expression.</param>
     /// <param name="orderBy">An optional ordering expression.</param>
     /// <param name="include">An optional include expression.</param>
     /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
     /// <returns>A queryable collection of entities.</returns>
-    public virtual IQueryable<TEntity> GetQueryable(Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false)
+    public virtual IQueryable<TEntity> GetQueryable(Expression<Func<TEntity, bool>>? filter = null,
+        Expression<Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>>? orderBy = null,
+        Expression<Func<IQueryable<TEntity>, IQueryable<TEntity>>>? include = null, bool isReadOnly = false)
     {
         IQueryable<TEntity> query = _dbSet;
-        include?.Invoke(query);
+        
+        if (include != null)
+        {
+            query = include.Compile().Invoke(query);
+        }
 
         if (isReadOnly)
             query = query.AsNoTracking();
@@ -91,28 +95,31 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
         if (filter != null)
             query = query.Where(filter);
 
-        return orderBy != null ? orderBy(query) : query;
+        return orderBy != null ? orderBy.Compile().Invoke(query) : query;
     }
 
     /// <summary>
-    ///     Gets a queryable collection of entities from the repository asynchronously.
+    ///     Gets a queryable collection of entities from the database asynchronously.
     /// </summary>
     /// <param name="filter">An optional filter expression.</param>
     /// <param name="orderBy">An optional ordering expression.</param>
     /// <param name="include">An optional include expression.</param>
     /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the queryable collection of entities.</returns>
-    public virtual Task<IQueryable<TEntity>> GetQueryableAsync(Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false, CancellationToken cancellationToken = default)
+    public virtual Task<IQueryable<TEntity>> GetQueryableAsync(Expression<Func<TEntity, bool>>? filter = null,
+        Expression<Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>>? orderBy = null,
+        Expression<Func<IQueryable<TEntity>, IQueryable<TEntity>>>? include = null, bool isReadOnly = false, CancellationToken cancellationToken = default)
     {
         return Task.Factory.StartNew(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             IQueryable<TEntity> query = _dbSet;
-            include?.Invoke(query);
+            if (include != null)
+            {
+                query = include.Compile().Invoke(query);
+            }
 
             if (isReadOnly)
                 query = query.AsNoTracking();
@@ -120,7 +127,7 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
             if (filter != null)
                 query = query.Where(filter);
 
-            return orderBy != null ? orderBy(query) : query;
+            return orderBy != null ? orderBy.Compile().Invoke(query) : query;
         }, cancellationToken);
     }
 
@@ -132,25 +139,25 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     /// <param name="include">An optional include expression.</param>
     /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
     /// <returns>A list of entities.</returns>
-    public virtual List<TEntity> GetList(Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false)
+    public virtual List<TEntity> GetList(Expression<Func<TEntity, bool>>? filter = null,
+        Expression<Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>>? orderBy = null,
+        Expression<Func<IQueryable<TEntity>, IQueryable<TEntity>>>? include = null, bool isReadOnly = false)
     {
         return GetQueryable(filter, orderBy, include, isReadOnly).ToList();
     }
 
     /// <summary>
-    ///     Gets a list of entities from the repository asynchronously.
+    ///     Gets a list of entities from the database asynchronously.
     /// </summary>
     /// <param name="filter">An optional filter expression.</param>
     /// <param name="orderBy">An optional ordering expression.</param>
     /// <param name="include">An optional include expression.</param>
     /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the list of entities.</returns>
-    public virtual Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null, bool isReadOnly = false, CancellationToken cancellationToken = default)
+    public virtual Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>>? filter = null,
+        Expression<Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>>? orderBy = null,
+        Expression<Func<IQueryable<TEntity>, IQueryable<TEntity>>>? include = null, bool isReadOnly = false, CancellationToken cancellationToken = default)
     {
         return GetQueryableAsync(filter, orderBy, include, isReadOnly, cancellationToken).Result.ToListAsync(cancellationToken);
     }
@@ -158,35 +165,31 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     /// <summary>
     ///     Gets a single entity from the database.
     /// </summary>
-    /// <param name="filter">An optional filter expression.</param>
-    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="filter">Required filter expression.</param>
     /// <param name="include">An optional include expression.</param>
     /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
     /// <returns>A single entity or null if not found.</returns>
-    public virtual TEntity? GetSingle(Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null,
+    public virtual TEntity? GetSingle(Expression<Func<TEntity, bool>> filter,
+        Expression<Func<IQueryable<TEntity>, IQueryable<TEntity>>>? include = null,
         bool isReadOnly = false)
     {
-        return GetQueryable(filter, orderBy, include, isReadOnly).SingleOrDefault();
+        return GetQueryable(filter, null, include, isReadOnly).SingleOrDefault();
     }
 
     /// <summary>
-    ///     Gets a single entity from the repository asynchronously.
+    ///     Gets a single entity from the database asynchronously.
     /// </summary>
-    /// <param name="filter">An optional filter expression.</param>
-    /// <param name="orderBy">An optional ordering expression.</param>
+    /// <param name="filter">Required filter expression.</param>
     /// <param name="include">An optional include expression.</param>
     /// <param name="isReadOnly">A flag indicating if the query is read-only.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the single entity or null if not found.</returns>
-    public virtual Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        Action<IQueryable<TEntity>> include = null,
+    public virtual Task<TEntity?> GetSingleAsync(Expression<Func<TEntity, bool>> filter,
+        Expression<Func<IQueryable<TEntity>, IQueryable<TEntity>>>? include = null,
         bool isReadOnly = false,
         CancellationToken cancellationToken = default)
     {
-        return GetQueryableAsync(filter, orderBy, include, isReadOnly, cancellationToken).Result.SingleOrDefaultAsync(cancellationToken);
+        return GetQueryableAsync(filter, null, include, isReadOnly, cancellationToken).Result.SingleOrDefaultAsync(cancellationToken);
     }
 
     #endregion
@@ -203,10 +206,10 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     }
 
     /// <summary>
-    ///     Updates a single entity in the repository asynchronously.
+    ///     Updates a single entity in the database asynchronously.
     /// </summary>
     /// <param name="entity">The entity to update asynchronously.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public virtual Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
@@ -218,7 +221,7 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     }
 
     #endregion
-
+    
     #region Delete
 
     /// <summary>
@@ -231,10 +234,10 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     }
 
     /// <summary>
-    ///     Deletes a single entity from the repository asynchronously.
+    ///     Deletes a single entity from the database asynchronously.
     /// </summary>
     /// <param name="entity">The entity to delete asynchronously.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public virtual Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
@@ -255,10 +258,10 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     }
 
     /// <summary>
-    ///     Deletes a list of entities from the repository asynchronously.
+    ///     Deletes a list of entities from the database asynchronously.
     /// </summary>
     /// <param name="entities">The list of entities to delete asynchronously.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     public virtual Task DeleteAsync(List<TEntity> entities, CancellationToken cancellationToken = default)
     {
