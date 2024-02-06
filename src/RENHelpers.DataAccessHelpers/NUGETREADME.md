@@ -5,7 +5,10 @@ creating a Repository layer and implementing essential utility functions. It ena
 practices, save time, and focus on solving problems efficiently.
 
 REN Data Access Helper allows developers to use customizable and expandable pre-defined data access classes to improve
-their agility of software development
+their agility of software development. 
+
+You can use predefined cache, repository and unit of work classes, override them or create new 
+additional functions to them  to move forward with the cache or database operations quickly and easily.
 
 # Documentation
 

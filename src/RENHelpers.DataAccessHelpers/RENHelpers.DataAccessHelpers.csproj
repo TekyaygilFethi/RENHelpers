@@ -10,13 +10,13 @@
         <PackageProjectUrl>https://github.com/TekyaygilFethi/RENHelpers</PackageProjectUrl>
         <PackageIcon>reindeer.png</PackageIcon>
         <RepositoryUrl>https://github.com/TekyaygilFethi/RENHelpers</RepositoryUrl>
-        <PackageReleaseNotes>- fixed parameters error in renrepository </PackageReleaseNotes>
+        <PackageReleaseNotes>- refactored nuget readme to make project purpose clear</PackageReleaseNotes>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageTags>DataAccess,UnitOfWork,EntityFrameworkCode,Repository</PackageTags>
         <PackageReadmeFile>NUGETREADME.md</PackageReadmeFile>
         <Copyright>Copyright (c) 2023 Fethi Tekyaygil</Copyright>
-        <Version>1.0.54</Version>
+        <Version>1.0.55</Version>
     </PropertyGroup>
 
 
