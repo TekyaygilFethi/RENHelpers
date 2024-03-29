@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Title>REN Data Access Helpers</Title>
@@ -10,26 +9,28 @@
         <PackageProjectUrl>https://github.com/TekyaygilFethi/RENHelpers</PackageProjectUrl>
         <PackageIcon>reindeer.png</PackageIcon>
         <RepositoryUrl>https://github.com/TekyaygilFethi/RENHelpers</RepositoryUrl>
-        <PackageReleaseNotes>- refactored nuget readme to make project purpose clear</PackageReleaseNotes>
+        <PackageReleaseNotes>- refactored dependencies</PackageReleaseNotes>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageTags>DataAccess,UnitOfWork,EntityFrameworkCode,Repository</PackageTags>
         <PackageReadmeFile>NUGETREADME.md</PackageReadmeFile>
         <Copyright>Copyright (c) 2023 Fethi Tekyaygil</Copyright>
-        <Version>1.0.55</Version>
+        <Version>2.0.2</Version>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.12" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-        <PackageReference Include="NuGet.CommandLine" Version="6.8.0">
+        <PackageReference Include="EFCore.BulkExtensions" Version="8.0.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="NuGet.CommandLine" Version="6.9.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="StackExchange.Redis" Version="2.6.122" />
-        <PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
+        <PackageReference Include="StackExchange.Redis" Version="2.7.27" />
+        <PackageReference Include="System.Runtime.Caching" Version="8.0.0" />
         <None Include="NUGETREADME.md" Pack="true" PackagePath="\" />
     </ItemGroup>
     

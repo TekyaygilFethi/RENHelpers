@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
+using EFCore.BulkExtensions;
 
-namespace RENHelpers.DataAccessHelpers.DatabaseHelpers;
+namespace RENHelpers.DataAccessHelpers;
 
 /// <summary>
 ///     Represents a generic repository interface for performing CRUD operations on a specific entity type.
@@ -23,21 +24,34 @@ public interface IRENRepository<TEntity> where TEntity : class
     /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    ///     Inserts list of entities into the repository.
+    /// </summary>
+    /// <param name="entities">The entity list to insert.</param>
+    void Insert(IEnumerable<TEntity> entities);
 
     /// <summary>
-    ///     Inserts a list of entities into the repository.
+    ///     Inserts list of entities into the repository asynchronously.
+    /// </summary>
+    /// <param name="entities">The entity list to insert asynchronously.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task InsertAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Bulk inserts a list of entities into the repository.
     /// </summary>
     /// <param name="entities">The list of entities to insert.</param>
-    void Insert(List<TEntity> entities);
+    void BulkInsert(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null);
 
     /// <summary>
-    ///     Inserts a list of entities into the repository asynchronously.
+    ///     Bulk inserts a list of entities into the repository asynchronously.
     /// </summary>
     /// <param name="entities">The list of entities to insert asynchronously.</param>
     /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task InsertAsync(List<TEntity> entities, CancellationToken cancellationToken = default);
-
+    Task BulkInsertAsync(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken cancellationToken = default);
     #endregion
 
     #region Read
@@ -135,7 +149,20 @@ public interface IRENRepository<TEntity> where TEntity : class
     /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
-
+    
+    /// <summary>
+    ///     Bulk updates multiple entities in the repository.
+    /// </summary>
+    /// <param name="entity">The entities to update.</param>
+    void BulkUpdate(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null);
+    
+    /// <summary>
+    ///     Bulk updates multiple entities in the repository asynchronously.
+    /// </summary>
+    /// <param name="entity">The entities to update asynchronously.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task BulkUpdateAsync(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken cancellationToken = default);
     #endregion
 
     #region Delete
@@ -155,18 +182,31 @@ public interface IRENRepository<TEntity> where TEntity : class
     Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Deletes a list of entities from the repository.
+    ///     Deletes a list of entities from the database.
     /// </summary>
     /// <param name="entities">The list of entities to delete.</param>
-    void Delete(List<TEntity> entities);
+    void Delete(IEnumerable<TEntity> entities);
 
     /// <summary>
-    ///     Deletes a list of entities from the repository asynchronously.
+    ///     Deletes a list of entities from the database asynchronously.
     /// </summary>
     /// <param name="entities">The list of entities to delete asynchronously.</param>
     /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task DeleteAsync(List<TEntity> entities, CancellationToken cancellationToken = default);
+    Task DeleteAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    ///     Bulk deletes a list of entities from the repository.
+    /// </summary>
+    /// <param name="entities">The list of entities to delete asynchronously.</param>{{}
+    void BulkDelete(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null);
+    
+    /// <summary>
+    ///     Bulk deletes a list of entities from the repository asynchronously.
+    /// </summary>
+    /// <param name="entities">The list of entities to delete asynchronously.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task BulkDeleteAsync(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken cancellationToken = default);
     #endregion
 }

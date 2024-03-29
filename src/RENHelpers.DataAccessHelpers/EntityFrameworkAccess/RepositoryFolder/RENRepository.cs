@@ -1,7 +1,9 @@
 ﻿using System.Linq.Expressions;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace RENHelpers.DataAccessHelpers.DatabaseHelpers;
+namespace RENHelpers.DataAccessHelpers;
 
 /// <summary>
 ///     Represents a generic repository for database operations on a specific entity type.
@@ -49,7 +51,7 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     ///     Inserts a list of entities into the database.
     /// </summary>
     /// <param name="entities">The list of entities to insert.</param>
-    public virtual void Insert(List<TEntity> entities)
+    public virtual void Insert(IEnumerable<TEntity> entities)
     {
         _dbSet.AddRange(entities);
     }
@@ -60,14 +62,38 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     /// <param name="entities">The list of entities to insert asynchronously.</param>
     /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public virtual async Task InsertAsync(List<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual async Task InsertAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         await _dbSet.AddRangeAsync(entities, cancellationToken);
     }
 
+    /// <summary>
+    ///     Bulk inserts a list of entities into the repository.
+    /// </summary>
+    /// <param name="entities">The list of entities to insert.</param>
+    public virtual void BulkInsert(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null)
+    {
+        bulkConfig ??= new BulkConfig();
+
+        _context.BulkInsert(entities, bulkConfig);
+    }
+
+    /// <summary>
+    ///     Bulk inserts a list of entities into the repository asynchronously.
+    /// </summary>
+    /// <param name="entities">The list of entities to insert asynchronously.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual async Task BulkInsertAsync(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken cancellationToken = default)
+    {
+        bulkConfig ??= new BulkConfig();
+        
+        await _context.BulkInsertAsync(entities, bulkConfig, cancellationToken: cancellationToken);
+    }
+
     #endregion
-    
+
     #region Read
 
     /// <summary>
@@ -83,7 +109,7 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
         Expression<Func<IQueryable<TEntity>, IQueryable<TEntity>>>? include = null, bool isReadOnly = false)
     {
         IQueryable<TEntity> query = _dbSet;
-        
+
         if (include != null)
         {
             query = include.Compile().Invoke(query);
@@ -193,7 +219,7 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     }
 
     #endregion
-    
+
     #region Update
 
     /// <summary>
@@ -220,8 +246,32 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
         }, cancellationToken);
     }
 
+    /// <summary>
+    ///     Bulk updates multiple entities in the repository.
+    /// </summary>
+    /// <param name="entity">The entities to update.</param>
+    public virtual void BulkUpdate(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null)
+    {
+        bulkConfig ??= new BulkConfig();
+        
+        _context.BulkUpdate(entities, bulkConfig);
+    }
+
+    /// <summary>
+    ///     Bulk updates multiple entities in the repository asynchronously.
+    /// </summary>
+    /// <param name="entity">The entities to update asynchronously.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual async Task BulkUpdateAsync(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken cancellationToken = default)
+    {
+        bulkConfig ??= new BulkConfig();
+        
+        await _context.BulkUpdateAsync(entities, bulkConfig, cancellationToken: cancellationToken);
+    }
+
     #endregion
-    
+
     #region Delete
 
     /// <summary>
@@ -252,7 +302,7 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     ///     Deletes a list of entities from the database.
     /// </summary>
     /// <param name="entities">The list of entities to delete.</param>
-    public virtual void Delete(List<TEntity> entities)
+    public virtual void Delete(IEnumerable<TEntity> entities)
     {
         _dbSet.RemoveRange(entities);
     }
@@ -263,13 +313,37 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     /// <param name="entities">The list of entities to delete asynchronously.</param>
     /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public virtual Task DeleteAsync(List<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual Task DeleteAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         return Task.Factory.StartNew(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();
             _dbSet.RemoveRange(entities);
         }, cancellationToken);
+    }
+
+    /// <summary>
+    ///     Bulk deletes a list of entities from the repository.
+    /// </summary>
+    /// <param name="entities">The list of entities to delete asynchronously.</param>{{}
+    public virtual void BulkDelete(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null)
+    {
+        bulkConfig ??= new BulkConfig();
+        
+        _context.BulkDelete(entities, bulkConfig);
+    }
+
+    /// <summary>
+    ///     Bulk deletes a list of entities from the repository asynchronously.
+    /// </summary>
+    /// <param name="entities">The list of entities to delete asynchronously.</param>
+    /// <param name="cancellationToken">Optional cancellationToken.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public virtual async Task BulkDeleteAsync(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken cancellationToken = default)
+    {
+        bulkConfig ??= new BulkConfig();
+        
+        await _context.BulkDeleteAsync(entities, bulkConfig, cancellationToken: cancellationToken);
     }
 
     #endregion
