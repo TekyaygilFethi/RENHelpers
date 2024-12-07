@@ -1,7 +1,6 @@
-﻿using System.Linq.Expressions;
-using EFCore.BulkExtensions;
+﻿using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using System.Linq.Expressions;
 
 namespace RENHelpers.DataAccessHelpers;
 
@@ -88,7 +87,7 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     public virtual async Task BulkInsertAsync(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken cancellationToken = default)
     {
         bulkConfig ??= new BulkConfig();
-        
+
         await _context.BulkInsertAsync(entities, bulkConfig, cancellationToken: cancellationToken);
     }
 
@@ -253,7 +252,7 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     public virtual void BulkUpdate(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null)
     {
         bulkConfig ??= new BulkConfig();
-        
+
         _context.BulkUpdate(entities, bulkConfig);
     }
 
@@ -266,7 +265,7 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     public virtual async Task BulkUpdateAsync(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken cancellationToken = default)
     {
         bulkConfig ??= new BulkConfig();
-        
+
         await _context.BulkUpdateAsync(entities, bulkConfig, cancellationToken: cancellationToken);
     }
 
@@ -329,7 +328,7 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     public virtual void BulkDelete(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null)
     {
         bulkConfig ??= new BulkConfig();
-        
+
         _context.BulkDelete(entities, bulkConfig);
     }
 
@@ -342,7 +341,7 @@ public class RENRepository<TEntity> : IRENRepository<TEntity> where TEntity : cl
     public virtual async Task BulkDeleteAsync(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken cancellationToken = default)
     {
         bulkConfig ??= new BulkConfig();
-        
+
         await _context.BulkDeleteAsync(entities, bulkConfig, cancellationToken: cancellationToken);
     }
 

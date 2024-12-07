@@ -1,5 +1,5 @@
-﻿using System.Linq.Expressions;
-using EFCore.BulkExtensions;
+﻿using EFCore.BulkExtensions;
+using System.Linq.Expressions;
 
 namespace RENHelpers.DataAccessHelpers;
 
@@ -24,7 +24,7 @@ public interface IRENRepository<TEntity> where TEntity : class
     /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default);
-    
+
     /// <summary>
     ///     Inserts list of entities into the repository.
     /// </summary>
@@ -149,13 +149,13 @@ public interface IRENRepository<TEntity> where TEntity : class
     /// <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
-    
+
     /// <summary>
     ///     Bulk updates multiple entities in the repository.
     /// </summary>
     /// <param name="entity">The entities to update.</param>
     void BulkUpdate(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null);
-    
+
     /// <summary>
     ///     Bulk updates multiple entities in the repository asynchronously.
     /// </summary>
@@ -200,7 +200,7 @@ public interface IRENRepository<TEntity> where TEntity : class
     /// </summary>
     /// <param name="entities">The list of entities to delete asynchronously.</param>{{}
     void BulkDelete(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null);
-    
+
     /// <summary>
     ///     Bulk deletes a list of entities from the repository asynchronously.
     /// </summary>

@@ -5,7 +5,7 @@ namespace RENHelpers.StringHelper.ExtensionsFolder;
 
 public static class StringExtensions
 {
-   public static bool RENIsNullOrEmpty(this string value)
+    public static bool RENIsNullOrEmpty(this string value)
     {
         return string.IsNullOrEmpty(value);
     }
@@ -14,7 +14,7 @@ public static class StringExtensions
     {
         return string.IsNullOrWhiteSpace(value);
     }
-    
+
     public static bool RENIsValid(this string value)
     {
         return !string.IsNullOrEmpty(value) || !string.IsNullOrWhiteSpace(value);
@@ -34,7 +34,7 @@ public static class StringExtensions
     {
         return string.Equals(value, valueToCompare, StringComparison.Ordinal);
     }
-    
+
     public static string RENRemoveDiacritics(this string value)
     {
         var normalizedString = value.Normalize(NormalizationForm.FormD);
@@ -47,7 +47,7 @@ public static class StringExtensions
 
         return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
     }
-    
+
     public static string RENRemoveSpecialCharacters(this string value)
     {
         var sb = new StringBuilder();
@@ -58,17 +58,17 @@ public static class StringExtensions
         }
         return sb.ToString();
     }
-    
+
     public static string[] RENSplitString(this string input, char separator)
     {
         return input.Split(separator);
     }
-    
+
     public static string RENTrimWhitespace(this string input)
     {
         return input.Trim();
     }
-    
+
     public static string RENTrimCharacters(this string input, char[] characters)
     {
         return input.Trim(characters);
