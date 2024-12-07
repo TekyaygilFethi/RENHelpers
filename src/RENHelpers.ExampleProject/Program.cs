@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using RENHelpers.ExampleProject.Database;
 using RENHelpers.DataAccessHelpers.Extensions;
+using RENHelpers.ExampleProject.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
