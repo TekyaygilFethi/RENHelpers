@@ -22,7 +22,6 @@ namespace RENHelpers.ExampleProject.Controllers
 
         public DataAccessExampleController(IRENUnitOfWork<RENDbContext> uow, IRENCacheService customCacheService)
         {
-            // _userRepository = uow.GetMyRepository<User>();
             _customCacheService = customCacheService;
             _sideRepository = uow.GetRENRepository<Side>();
             _userRepository = uow.GetRENRepository<User>();
