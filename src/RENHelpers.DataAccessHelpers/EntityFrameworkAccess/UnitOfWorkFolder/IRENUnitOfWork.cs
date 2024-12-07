@@ -13,6 +13,7 @@ public interface IRENUnitOfWork<TDbContext> where TDbContext : DbContext
     /// <summary>
     ///     Commits the changes made in the unit of work to the database asynchronously.
     /// </summary>
+    // <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the success of saving the changes (true if successful; otherwise, false).</returns>
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 
@@ -33,11 +34,14 @@ public interface IRENUnitOfWork<TDbContext> where TDbContext : DbContext
     /// <summary>
     ///    Creates a transaction.
     /// </summary>
+    // <param name="isolationLevel">System.Data.IsolationLevel for transaction.</param>
     void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
 
     /// <summary>
     ///    Creates a transaction asynchronously.
     /// </summary>
+    // <param name="isolationLevel">System.Data.IsolationLevel for transaction.</param>
+    // <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     Task BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted, CancellationToken cancellationToken = default);
 
