@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data;
+using System.Threading;
 
 namespace RENHelpers.DataAccessHelpers.DatabaseHelpers;
 
@@ -124,6 +125,8 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
     {
         if (_currentTransaction != null)
             throw new InvalidOperationException("A transaction is already in progress.");
+        
+        cancellationToken.ThrowIfCancellationRequested();
 
         _currentTransaction = await _context.Database.BeginTransactionAsync(isolationLevel, cancellationToken);
     }
@@ -144,11 +147,14 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
     /// <summary>
     ///    Commits the changes on transaction object asynchronously.
     /// </summary>
+    // <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task CommitTransactionAsync()
+    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
         if (_currentTransaction == null)
             throw new InvalidOperationException("There is no transaction to commit.");
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         await _currentTransaction.CommitAsync();
         await _currentTransaction.DisposeAsync();
@@ -171,11 +177,14 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
     /// <summary>
     ///    Rollbacks the changes on transaction object asynchronously.
     /// </summary>
+    // <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task RollbackTransactionAsync()
+    public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
     {
         if (_currentTransaction == null)
             throw new InvalidOperationException("There is no transaction to rollback.");
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         await _currentTransaction.RollbackAsync();
         await _currentTransaction.DisposeAsync();

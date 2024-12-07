@@ -53,8 +53,9 @@ public interface IRENUnitOfWork<TDbContext> where TDbContext : DbContext
     /// <summary>
     ///    Commits the changes on transaction object asynchronously.
     /// </summary>
+    // <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task CommitTransactionAsync();
+    Task CommitTransactionAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     ///    Rollbacks the changes on transaction object.
@@ -64,8 +65,9 @@ public interface IRENUnitOfWork<TDbContext> where TDbContext : DbContext
     /// <summary>
     ///    Rollbacks the changes on transaction object asynchronously.
     /// </summary>
+    // <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task RollbackTransactionAsync();
+    Task RollbackTransactionAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     ///    Disposes the Unit Of Work object.
