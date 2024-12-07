@@ -53,6 +53,7 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
     /// <summary>
     ///     Commits the changes made in the unit of work to the database asynchronously.
     /// </summary>
+    // <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>A task representing the success of saving the changes (true if successful; otherwise, false).</returns>
     public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -103,6 +104,7 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
     /// <summary>
     ///    Creates a transaction.
     /// </summary>
+    // <param name="isolationLevel">System.Data.IsolationLevel for transaction.</param>
     /// <returns>An instance of the created transaction object.</returns>
     public virtual void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
     {
@@ -115,6 +117,8 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
     /// <summary>
     ///    Creates a transaction asynchronously.
     /// </summary>
+    // <param name="isolationLevel">System.Data.IsolationLevel for transaction.</param>
+    // <param name="cancellationToken">Optional cancellationToken.</param>
     /// <returns>An instance of the created transaction object.</returns>
     public virtual async Task BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted, CancellationToken cancellationToken = default)
     {
