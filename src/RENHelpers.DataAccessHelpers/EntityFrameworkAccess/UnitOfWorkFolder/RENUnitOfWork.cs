@@ -157,7 +157,7 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
     public void RollbackTransaction()
     {
         if (_currentTransaction == null)
-            throw new InvalidOperationException("There is no transaction to commit.");
+            throw new InvalidOperationException("There is no transaction to rollback.");
 
         _currentTransaction.Commit();
         _currentTransaction.Dispose();
