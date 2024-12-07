@@ -1,0 +1,59 @@
+@baseUrl = http://localhost:5000/api/DataAccessExample
+
+# Get Light Side Users
+GET {{baseUrl}}/GetLightSideUsers
+Content-Type: application/json
+
+###
+
+# Get All Users (Cache Example)
+GET {{baseUrl}}/Index
+Content-Type: application/json
+
+###
+
+# Get User by Id (Cache Example)
+GET {{baseUrl}}/GetUser?Id=1
+Content-Type: application/json
+
+###
+
+# Get User By Custom Function
+GET {{baseUrl}}/GetUserByCustomFunction?Id=1
+Content-Type: application/json
+
+###
+
+# Get Light Side Users 2
+GET {{baseUrl}}/GetLightSideUsers2?Id=1
+Content-Type: application/json
+
+###
+
+# Get Light Sides
+GET {{baseUrl}}/GetLightSides?Id=1
+Content-Type: application/json
+
+###
+
+# Get Users Ordered
+GET {{baseUrl}}/GetUsersOrdered
+Content-Type: application/json
+
+###
+
+# Bulk Insert Users
+POST {{baseUrl}}/BulkInsertUsers?size=100&batchSize=50
+Content-Type: application/json
+
+###
+
+# Normal Insert Users
+POST {{baseUrl}}/NormalInsertUsers?size=100
+Content-Type: application/json
+
+###
+
+# Insert With Transaction
+POST {{baseUrl}}/InsertWithTransaction?size=100
+Content-Type: application/json

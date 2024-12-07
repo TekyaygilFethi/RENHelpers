@@ -232,7 +232,7 @@ public class RENInMemoryCacheService : IRENCacheService
     /// <returns>A task representing the asynchronous operation.</returns>
     public virtual Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        return Task.Factory.StartNew(()=>
+        return Task.Factory.StartNew(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();
             Clear();
