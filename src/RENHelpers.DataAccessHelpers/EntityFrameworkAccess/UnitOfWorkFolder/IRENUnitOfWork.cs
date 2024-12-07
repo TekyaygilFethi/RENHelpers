@@ -8,13 +8,13 @@ public interface IRENUnitOfWork<TDbContext> where TDbContext : DbContext
     /// <summary>
     ///     Commits the changes made in the unit of work to the database.
     /// </summary>
-    void SaveChanges(bool createInnerTransaction = false);
+    void SaveChanges();
 
     /// <summary>
     ///     Commits the changes made in the unit of work to the database asynchronously.
     /// </summary>
     /// <returns>A task representing the success of saving the changes (true if successful; otherwise, false).</returns>
-    Task SaveChangesAsync(bool createInnerTransaction = false, CancellationToken cancellationToken = default);
+    Task SaveChangesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets a repository for a specific entity type.

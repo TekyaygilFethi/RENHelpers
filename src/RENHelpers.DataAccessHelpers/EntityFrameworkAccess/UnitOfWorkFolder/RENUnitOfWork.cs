@@ -4,6 +4,7 @@ using System.Data;
 
 namespace RENHelpers.DataAccessHelpers.DatabaseHelpers;
 
+
 /// <summary>
 ///     Represents a unit of work for managing database transactions and repositories in a generic context.
 /// </summary>
@@ -28,9 +29,9 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
     ///     Commits the changes made in the unit of work to the database.
     /// </summary>
     /// <returns>True if the changes are successfully saved; otherwise, false.</returns>
-    public virtual void SaveChanges(bool createInnerTransaction = false)
+    public virtual void SaveChanges()
     {
-        if (!createInnerTransaction)
+        if (_currentTransaction != null)
         {
             _context.SaveChanges();
             return;
@@ -53,10 +54,10 @@ public class RENUnitOfWork<TDbContext> : IRENUnitOfWork<TDbContext> where TDbCon
     ///     Commits the changes made in the unit of work to the database asynchronously.
     /// </summary>
     /// <returns>A task representing the success of saving the changes (true if successful; otherwise, false).</returns>
-    public virtual async Task SaveChangesAsync(bool createInnerTransaction = false, CancellationToken cancellationToken = default)
+    public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (!createInnerTransaction)
+        if (_currentTransaction != null)
         {
             await _context.SaveChangesAsync(cancellationToken);
             return;
