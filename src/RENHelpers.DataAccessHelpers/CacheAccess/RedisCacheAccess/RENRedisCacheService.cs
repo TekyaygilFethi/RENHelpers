@@ -7,13 +7,14 @@ using StackExchange.Redis;
 public class RENRedisCacheService : IRENCacheService
 {
     private IDatabase _cacheDb;
-    private ConnectionMultiplexer _connection;
+    private IConnectionMultiplexer _connection;
     private int _defaultAbsoluteExpirationHours;
 
-    public RENRedisCacheService(IConfiguration configuration)
+    public RENRedisCacheService(IConnectionMultiplexer connection, IConfiguration configuration)
     {
+        _connection = connection;
+        _cacheDb = _connection.GetDatabase();
         SetDefaults(configuration);
-        Connect(configuration);
     }
 
     /// <summary>
@@ -222,30 +223,5 @@ public class RENRedisCacheService : IRENCacheService
     private void SetDefaults(IConfiguration configuration)
     {
         _defaultAbsoluteExpirationHours = int.Parse(configuration.GetSection("CacheConfiguration:RedisConfiguraton:TimeConfiguration:AbsoluteExpirationInHours")?.Value ?? "12");
-    }
-
-    private void Connect(IConfiguration configuration)
-    {
-        var username = configuration.GetSection("CacheConfiguration:RedisConfiguration:Username")?.Value;
-        var password = configuration.GetSection("CacheConfiguration:RedisConfiguration:Password")?.Value;
-        var url = configuration.GetSection("CacheConfiguration:RedisConfiguration:Url")?.Value;
-        var databaseId = int.Parse(configuration.GetSection("CacheConfiguration:RedisConfiguration:DatabaseId")?.Value);
-        var abortOnConnectFail = bool.Parse(configuration.GetSection("CacheConfiguration:RedisConfiguration:AbortOnConnectFail")?.Value);
-
-        var options = new ConfigurationOptions
-        {
-            EndPoints = { url },
-            DefaultDatabase = databaseId,
-            AbortOnConnectFail = abortOnConnectFail
-        };
-
-        if (username.RENIsValid())
-            options.User = username;
-
-        if (password.RENIsValid())
-            options.Password = password;
-
-        _connection = ConnectionMultiplexer.Connect(options);
-        _cacheDb = _connection.GetDatabase();
     }
 }
