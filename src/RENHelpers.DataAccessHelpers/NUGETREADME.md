@@ -1,3 +1,7 @@
+﻿🚨 THIS PACKAGE IS NOW OBSOLETE! 🚨
+    Please use [REN.Kit.DataKit](https://www.nuget.org/packages/Ren.Kit.DataKit/) and [REN.Kit.CacheKit](https://www.nuget.org/packages/REN.Kit.CacheKit/) for all new development.
+    See [documentation](https://fethis-organization.gitbook.io/ren.kit-documentation) for migration guide.
+
 # Welcome to REN (Regular Everyday Normal) Helper
 
 REN (Regular Everyday Normal) is a software library that streamlines and standardizes common development tasks, such as

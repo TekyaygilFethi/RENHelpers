@@ -3,19 +3,23 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Title>REN Data Access Helpers</Title>
+        <Title>[OBSOLETE] REN Data Access Helpers</Title>
         <Authors>Fethi Tekyaygil</Authors>
-        <Description>REN Data Access Helper allows developers to use customizable and expandable pre-defined data access classes to improve their agility of software development</Description>
+        <Description>
+			🚨 THIS PACKAGE IS NOW OBSOLETE! 🚨
+			Please use REN.Kit.DataKit and REN.Kit.CacheKit for all new development.
+			See README or documentation for migration guide.
+			REN Data Access Helper allows developers to use customizable and expandable pre-defined data access classes to improve their agility of software development</Description>
         <PackageProjectUrl>https://github.com/TekyaygilFethi/RENHelpers</PackageProjectUrl>
         <PackageIcon>reindeer.png</PackageIcon>
         <RepositoryUrl>https://github.com/TekyaygilFethi/RENHelpers</RepositoryUrl>
-        <PackageReleaseNotes>- downgraded entity framework package versions</PackageReleaseNotes>
+        <PackageReleaseNotes>- added obsolete description</PackageReleaseNotes>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <PackageTags>DataAccess,UnitOfWork,EntityFrameworkCode,Repository</PackageTags>
+        <PackageTags>obsolete,deprecated,renkit, DataAccess,UnitOfWork,EntityFrameworkCode,Repository</PackageTags>
         <PackageReadmeFile>NUGETREADME.md</PackageReadmeFile>
         <Copyright>Copyright (c) 2025 Fethi Tekyaygil</Copyright>
-        <Version>2.1.0</Version>
+        <Version>2.1.2</Version>
         <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
